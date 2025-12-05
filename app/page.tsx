@@ -1,65 +1,147 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+import React from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function LandingPage() {
+    const router = useRouter();
+
+    // Array of frog image paths - update these with your actual image filenames
+    const frogImages = [
+        '/frog1.png',
+        '/frog2.png',
+        '/frog3.png',
+        '/frog4.png',
+        '/frog5.png',
+        '/frog6.png',
+        '/frog7.png',
+        '/frog8.png',
+    ];
+
+    // Duplicate the array for seamless loop
+    const duplicatedImages = [...frogImages, ...frogImages];
+
+    return (
+        <main
+            className="min-h-screen w-full relative flex flex-col items-center justify-center p-4 text-white"
+            style={{
+                backgroundImage: 'url(/landing-background.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundAttachment: 'fixed',
+            }}
+        >
+            {/* Dark overlay for better text readability */}
+            <div className="absolute inset-0 bg-black/40" />
+
+
+            {/* NAVIGATION */}
+            <div className="absolute top-6 left-6 z-20 flex gap-6">
+                <button onClick={() => router.push('/')} className="nav-link">
+                    HOME
+                </button>
+                <button onClick={() => router.push('/mint')} className="nav-link">
+                    MINTING BAY
+                </button>
+                <button onClick={() => router.push('/hall-of-fame')} className="nav-link">
+                    HALL OF FAME
+                </button>
+                <button onClick={() => router.push('/fotd')} className="nav-link">
+                    F.O.T.D
+                </button>
+            </div>
+
+
+            {/* Social Links - Top Right */}
+            <div className="absolute top-6 right-6 z-20 flex gap-4">
+                <a
+                    href="https://x.com/pogcult"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-14 h-14 rounded-full overflow-hidden border-2 border-green-500 hover:border-green-400 transition-all hover:scale-110"
+                    style={{ boxShadow: '0 0 20px rgba(106, 188, 58, 0.5)' }}
+                >
+                    <img
+                        src="/Twitter.png"
+                        alt="X/Twitter"
+                        className="w-full h-full object-cover"
+                    />
+                </a>
+                <a
+                    href="https://pump.fun/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-14 h-14 rounded-full overflow-hidden border-2 border-green-500 hover:border-green-400 transition-all hover:scale-110"
+                    style={{ boxShadow: '0 0 20px rgba(106, 188, 58, 0.5)' }}
+                >
+                    <img
+                        src="/Pumpfun.png"
+                        alt="Pump.fun"
+                        className="w-full h-full object-cover"
+                    />
+                </a>
+            </div>
+
+
+
+            {/* Content Container */}
+            <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-12">
+
+                {/* Title */}
+                <h1
+                    className="text-4xl md:text-6xl lg:text-7xl text-center pixel-3d"
+                    style={{ fontFamily: "'Press Start 2P', cursive" }}
+                >
+                    FEDERATION OF FROGS
+                </h1>
+
+
+
+                {/* Scrolling Frog Gallery */}
+                <div className="w-full overflow-hidden py-8">
+                    <div className="relative">
+                        <div
+                            className="flex gap-6 animate-scroll"
+                            style={{
+                                width: 'fit-content',
+                            }}
+                        >
+                            {duplicatedImages.map((img, index) => (
+                                <div
+                                    key={index}
+                                    className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 bg-gray-800 rounded-lg border-4 border-gray-800 overflow-hidden"
+                                    style={{ boxShadow: '0 0 20px rgba(106, 188, 58, 0.5)' }}
+                                >
+                                    <img
+                                        src={img}
+                                        alt={`Frog ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                        style={{ imageRendering: 'pixelated' }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Mint Button */}
+                <button
+                    onClick={() => router.push('/mint')}
+                    className="pixel-button"
+                    style={{
+                        fontSize: '18px',
+                        padding: '20px 60px',
+                        minWidth: '300px',
+                    }}
+                >
+                    ENTER MINTING BAY
+                </button>
+            </div>
+
+
+
+
+
+        </main>
+    );
 }
