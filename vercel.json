@@ -2,7 +2,7 @@
     "crons": [
       {
         "path": "/api/frogs/fotd/process-winner",
-        "schedule": "* * * * *"
+        "schedule": "0 0 * * *"
       }
     ]
   }
