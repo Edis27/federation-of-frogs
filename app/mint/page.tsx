@@ -442,11 +442,11 @@ export default function Home() {
                         <button onClick={() => router.push('/mint')} className="nav-link">
                             MINTING BAY
                         </button>
-                        <button onClick={() => router.push('/hall-of-fame')} className="nav-link">
-                            HALL OF FAME
-                        </button>
                         <button onClick={() => router.push('/fotd')} className="nav-link">
                             F.O.T.D
+                        </button>
+                        <button onClick={() => router.push('/hall-of-fame')} className="nav-link">
+                            HALL OF FAME
                         </button>
                     </div>
 

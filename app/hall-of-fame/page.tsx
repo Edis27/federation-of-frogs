@@ -62,7 +62,7 @@ export default function HallOfFame() {
 
     return (
         <main className="min-h-screen w-full relative flex flex-col items-center p-4 text-white font-mono">
-            {/* Navigation - Top Left */}
+            {/* NAVIGATION */}
             <div className="absolute top-6 left-6 z-20 flex gap-6">
                 <button onClick={() => router.push('/')} className="nav-link">
                     HOME
@@ -70,11 +70,11 @@ export default function HallOfFame() {
                 <button onClick={() => router.push('/mint')} className="nav-link">
                     MINTING BAY
                 </button>
-                <button onClick={() => router.push('/hall-of-fame')} className="nav-link">
-                    HALL OF FAME
-                </button>
                 <button onClick={() => router.push('/fotd')} className="nav-link">
                     F.O.T.D
+                </button>
+                <button onClick={() => router.push('/hall-of-fame')} className="nav-link">
+                    HALL OF FAME
                 </button>
             </div>
 
