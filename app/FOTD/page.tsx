@@ -84,6 +84,8 @@ export default function FOTDPage() {
         return () => clearInterval(pollInterval);
     }, []);
 
+    const hasFrog = !isLoading && fotdData?.currentFrog;
+
     return (
         <main
             className="min-h-screen w-full relative flex flex-col items-center justify-center p-4 text-white"
@@ -113,7 +115,37 @@ export default function FOTDPage() {
                 </button>
             </div>
 
-
+            {/* Timer Display - Conditionally positioned (only when frog exists) */}
+            {hasFrog && (
+                <div className="absolute top-6 right-6 z-20 w-64 bg-gray-800 p-3 rounded-xl border-4 border-gray-700 transition-all duration-500">
+                    <p 
+                        className="text-green-300 text-center mb-2 text-[8px]"
+                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                    >
+                        TIME REMAINING
+                    </p>
+                    <div className="bg-black p-2 rounded-lg border-2 border-gray-900">
+                        <p 
+                            className="text-xl text-yellow-400 font-bold text-center"
+                            style={{ fontFamily: "'Press Start 2P', cursive" }}
+                        >
+                            {isLoading ? '...' : timeLeft}
+                        </p>
+                    </div>
+                    {/* Prize Info */}
+                    <div 
+                        className="mt-2 bg-black p-2 rounded-lg border-2 border-gray-900"
+                        style={{ boxShadow: '0 0 30px rgba(255, 215, 0, 0.4)' }}
+                    >
+                        <p 
+                            className="text-[8px] text-yellow-400 font-bold text-center"
+                            style={{ fontFamily: "'Press Start 2P', cursive" }}
+                        >
+                            Prize Pool: (link)
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {/* Content */}
             <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-8">
@@ -122,31 +154,33 @@ export default function FOTDPage() {
                     FROG OF THE DAY
                 </h1>
 
-                {/* Timer Display */}
-                <div className="w-full max-w-md bg-gray-800 p-6 rounded-xl border-4 border-gray-700">
-                    <p className="text-green-300 text-center mb-3 text-xs" style={{ fontFamily: "'Press Start 2P', cursive" }}>
-                        TIME REMAINING
-                    </p>
-                    <div className="bg-black p-6 rounded-lg border-2 border-gray-900">
-                        <p className="text-4xl text-yellow-400 font-bold text-center" style={{ fontFamily: "'Press Start 2P', cursive" }}>
-                            {isLoading ? '...' : timeLeft}
+                {/* Timer Display - Only shown in center when NO frog */}
+                {!hasFrog && (
+                    <div className="w-full max-w-md bg-gray-800 p-6 rounded-xl border-4 border-gray-700">
+                        <p className="text-green-300 text-center mb-3 text-xs" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+                            TIME REMAINING
                         </p>
+                        <div className="bg-black p-6 rounded-lg border-2 border-gray-900">
+                            <p className="text-4xl text-yellow-400 font-bold text-center" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+                                {isLoading ? '...' : timeLeft}
+                            </p>
+                        </div>
+                        {/* Prize Info */}
+                        <div className="mt-4 bg-black p-6 rounded-lg border-2 border-gray-900" style={{ boxShadow: '0 0 30px rgba(255, 215, 0, 0.4)' }}>
+                            <p className="text-l text-yellow-400 font-bold text-center" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+                                Prize Pool: (link)
+                            </p>
+                        </div>
                     </div>
-                    {/* Prize Info */}
-                    <div className="mt-4 bg-black p-6 rounded-lg border-2 border-gray-900" style={{ boxShadow: '0 0 30px rgba(255, 215, 0, 0.4)' }}>
-                        <p className="text-l text-yellow-400 font-bold text-center" style={{ fontFamily: "'Press Start 2P', cursive" }}>
-                            Prize Pool: (link)
-                        </p>
-                    </div>
-                </div>
+                )}
 
-                {/* Current Leading Frog */}
+                {/* Current Leading Frog or No Frog Message */}
                 {isLoading ? (
                     <div className="text-center text-xl" style={{ fontFamily: "'Press Start 2P', cursive" }}>
                         LOADING...
                     </div>
                 ) : fotdData?.currentFrog ? (
-                    <div className="w-full max-w-md bg-gray-800 p-6 rounded-xl border-4 border-gray-700" >
+                    <div className="w-full max-w-md bg-gray-800 p-6 rounded-xl border-4 border-gray-700">
                         <h2 className="text-2xl text-center mb-4 pixel-3d" style={{ fontFamily: "'Press Start 2P', cursive" }}>
                             CURRENT LEADER
                         </h2>
@@ -175,7 +209,6 @@ export default function FOTDPage() {
                             >
                                 RARITY: {fotdData.currentFrog.rarity.score}
                             </p>
-
                         </div>
 
                         {/* Wallet Address */}
@@ -189,7 +222,7 @@ export default function FOTDPage() {
                         </div>
                     </div>
                 ) : (
-                    <div className="w-full max-w-md bg-gray-800 p-8 rounded-xl border-4 border-gray-700" >
+                    <div className="w-full max-w-md bg-gray-800 p-8 rounded-xl border-4 border-gray-700">
                         <p className="text-center text-lg" style={{ fontFamily: "'Press Start 2P', cursive" }}>
                             NO FROGS MINTED YET
                         </p>
@@ -198,7 +231,6 @@ export default function FOTDPage() {
                         </p>
                     </div>
                 )}
-
             </div>
         </main>
     );
