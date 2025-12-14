@@ -2,6 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { PublicKey } from '@solana/web3.js';
+import {
+    TOKEN_PROGRAM_ID,
+    TOKEN_2022_PROGRAM_ID,
+    getAssociatedTokenAddressSync,
+} from '@solana/spl-token';
 
 interface FrogData {
     _id: string;
@@ -21,11 +28,79 @@ interface FOTDData {
     timeRemaining: number;
 }
 
+// Treasury wallet and token config (same as mint page)
+const RIBBIT_MINT_ADDRESS = new PublicKey("8aW5vwBWQP3vTqqHGSGs6MSqnRkSvHnti96b55ygpump");
+const TREASURY_WALLET = new PublicKey("6hNozPrcywMv5Lyx6VuqaSooWCsNsvQyoXie9W4u8RTK");
+const PRIZE_PERCENTAGE = 0.25; // 0.25% of treasury balance
+
 export default function FOTDPage() {
     const router = useRouter();
+    const { connection } = useConnection();
+    
     const [fotdData, setFotdData] = useState<FOTDData | null>(null);
     const [timeLeft, setTimeLeft] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
+    
+    // Prize pool state
+    const [prizePool, setPrizePool] = useState<string>('0');
+    const [isPrizeLoading, setIsPrizeLoading] = useState(true);
+
+    // Fetch treasury balance for prize pool
+    const fetchPrizePool = async () => {
+        setIsPrizeLoading(true);
+        try {
+            // Try Token-2022 first (same strategy as mint page)
+            const ata2022 = getAssociatedTokenAddressSync(
+                RIBBIT_MINT_ADDRESS,
+                TREASURY_WALLET,
+                false,
+                TOKEN_2022_PROGRAM_ID
+            );
+
+            try {
+                const info2022 = await connection.getTokenAccountBalance(ata2022);
+                if (info2022?.value?.uiAmount != null) {
+                    console.log("✅ Treasury Token-2022 account detected");
+                    const prizeAmount = info2022.value.uiAmount * PRIZE_PERCENTAGE;
+                    setPrizePool(prizeAmount.toFixed(2));
+                    setIsPrizeLoading(false);
+                    return;
+                }
+            } catch (e) {
+                console.log("Treasury Token-2022 not found, trying standard...");
+            }
+
+            // Fallback: Try Standard Token Program
+            const ataSpl = getAssociatedTokenAddressSync(
+                RIBBIT_MINT_ADDRESS,
+                TREASURY_WALLET,
+                false,
+                TOKEN_PROGRAM_ID
+            );
+
+            try {
+                const infoSpl = await connection.getTokenAccountBalance(ataSpl);
+                if (infoSpl?.value?.uiAmount != null) {
+                    console.log("✅ Treasury standard token account detected");
+                    const prizeAmount = infoSpl.value.uiAmount * PRIZE_PERCENTAGE;
+                    setPrizePool(prizeAmount.toFixed(2));
+                    setIsPrizeLoading(false);
+                    return;
+                }
+            } catch (e) {
+                console.log("Treasury standard token not found either");
+            }
+
+            setPrizePool('0');
+            console.warn("⚠️ No treasury token account found");
+
+        } catch (error) {
+            console.error("❌ Error fetching prize pool:", error);
+            setPrizePool('0');
+        } finally {
+            setIsPrizeLoading(false);
+        }
+    };
 
     // Fetch current FOTD data
     const fetchFOTDData = async () => {
@@ -79,8 +154,14 @@ export default function FOTDPage() {
     // Initial data fetch
     useEffect(() => {
         fetchFOTDData();
+        fetchPrizePool();
+        
         // Poll for updates every 10 seconds
-        const pollInterval = setInterval(fetchFOTDData, 10000);
+        const pollInterval = setInterval(() => {
+            fetchFOTDData();
+            fetchPrizePool();
+        }, 10000);
+        
         return () => clearInterval(pollInterval);
     }, []);
 
@@ -141,16 +222,22 @@ export default function FOTDPage() {
                             className="text-[8px] text-yellow-400 font-bold text-center"
                             style={{ fontFamily: "'Press Start 2P', cursive" }}
                         >
-                            Prize Pool: (link)
+                            $Ribbit Prize Pool:
+                        </p>
+                        <p 
+                            className="text-[10px] text-green-400 font-bold text-center mt-1"
+                            style={{ fontFamily: "'Press Start 2P', cursive" }}
+                        >
+                            {isPrizeLoading ? '...' : `${parseFloat(prizePool).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} `}
                         </p>
                     </div>
                 </div>
             )}
 
             {/* Content */}
-            <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-8">
+            <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-4">
                 {/* Title */}
-                <h1 className="text-4xl md:text-6xl text-center pixel-3d" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+                <h1 className="text-4xl md:text-6xl mt-10 text-center pixel-3d" style={{ fontFamily: "'Press Start 2P', cursive" }}>
                     FROG OF THE DAY
                 </h1>
 
@@ -167,8 +254,11 @@ export default function FOTDPage() {
                         </div>
                         {/* Prize Info */}
                         <div className="mt-4 bg-black p-6 rounded-lg border-2 border-gray-900" style={{ boxShadow: '0 0 30px rgba(255, 215, 0, 0.4)' }}>
-                            <p className="text-l text-yellow-400 font-bold text-center" style={{ fontFamily: "'Press Start 2P', cursive" }}>
-                                Prize Pool: (link)
+                            <p className="text-xs text-yellow-400 font-bold text-center mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+                                $Ribbit Prize Pool:
+                            </p>
+                            <p className="text-2xl text-green-400 font-bold text-center" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+                                {isPrizeLoading ? '...' : `${parseFloat(prizePool).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} `}
                             </p>
                         </div>
                     </div>
@@ -181,9 +271,7 @@ export default function FOTDPage() {
                     </div>
                 ) : fotdData?.currentFrog ? (
                     <div className="w-full max-w-md bg-gray-800 p-6 rounded-xl border-4 border-gray-700">
-                        <h2 className="text-2xl text-center mb-4 pixel-3d" style={{ fontFamily: "'Press Start 2P', cursive" }}>
-                            CURRENT LEADER
-                        </h2>
+                        
 
                         {/* Frog Image */}
                         <div className="mb-4">
@@ -214,7 +302,7 @@ export default function FOTDPage() {
                         {/* Wallet Address */}
                         <div className="bg-black p-2 rounded-md border border-gray-900">
                             <p className="text-green-300 text-center text-xs mb-2" style={{ fontFamily: "'Press Start 2P', cursive" }}>
-                                MINTER
+                                OWNER
                             </p>
                             <p className="text-white text-center text-xs break-all" style={{ fontFamily: "'Courier New', monospace" }}>
                                 {fotdData.currentFrog.walletAddress}

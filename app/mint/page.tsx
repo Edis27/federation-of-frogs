@@ -30,26 +30,73 @@ const RIBBIT_TOKEN_DECIMALS = 6;
 // =========================================================================
 
 const BACKGROUNDS = [
-    { path: '/background-blue.png', weight: 30 },
-    { path: '/background-green.png', weight: 30 },
-    { path: '/background-orange.png', weight: 30 },
-    { path: '/background-solana.png', weight: 10 },
+    { path: '/background-blue.png', weight: 20 },
+    { path: '/background-purple.png', weight: 20 },
+    { path: '/background-cocoa.png', weight: 20 },
+    { path: '/background-grey.png', weight: 20 },
+    { path: '/background-pink.png', weight: 20 },
 ];
 
-const BODIES = [
-    { path: '/body-alien.png', weight: 5 },
-    { path: '/body-skeleton.png', weight: 10 },
-    { path: '/body-red.png', weight: 25 },
-    { path: '/body-green.png', weight: 60 },
+const TYPES = [
+    { path: '/type-solana.png', weight: 1 },
+    { path: '/type-alien.png', weight: 3 },
+    { path: '/type-skeleton.png', weight: 5 },
+    { path: '/type-zombie.png', weight: 8 },
+    { path: '/type-female.png', weight: 38 },
+    { path: '/type-male.png', weight: 45 },
 ];
 
 const HEADS = [
-    { path: '/head-crown.png', weight: 1 },
-    { path: '/head-fire.png', weight: 5 },
-    { path: '/head-santa.png', weight: 10 },
-    { path: '/head-sheriff.png', weight: 15 },
-    { path: '/head-wizard.png', weight: 20 },
-    { path: '/head-none.png', weight: 39 },
+    { path: '/head-for-a-king.png', weight: 0.1 },
+    { path: '/head-watermelon.png', weight: 0.3 },
+    { path: '/head-backwards-solana-cap.png', weight: 0.6 },
+    { path: '/head-halo.png', weight: 2 },
+    { path: '/head-police-hat.png', weight: 3 },
+    { path: '/head-head-band.png', weight: 4 },
+    { path: '/head-swamp-hat.png', weight: 5 },
+    { path: '/head-pirate-bandana.png', weight: 6 },
+    { path: '/head-lucky-hat.png', weight: 7 },
+    { path: '/head-red-punk-hair.png', weight: 8.5 },
+    { path: '/head-red-hair.png', weight: 9.5 },
+    { path: '/head-cowboy-hat.png', weight: 10.5 },
+    { path: '/head-beanie.png', weight: 11.5 },
+    { path: '/head-black-hair.png', weight: 13 },
+    { path: '/head-none.png', weight: 19 },
+];
+
+const BODIES = [
+    { path: '/body-diamond-necklace.png', weight: 0.5 },
+    { path: '/body-tuxedo.png', weight: 2.5 },
+    { path: '/body-pilot-jacket.png', weight: 5 },
+    { path: '/body-kimono.png', weight: 7.5 },
+    { path: '/body-referee-shirt.png', weight: 10 },
+    { path: '/body-safety-vest.png', weight: 12.5 },
+    { path: '/body-bathrobe.png', weight: 15 },
+    { path: '/body-hawaiian.png', weight: 17.5 },
+    { path: '/body-none.png', weight: 30 },
+];
+
+const EYES = [
+    { path: '/eyes-solana-vipers.png', weight: 1 },
+    { path: '/eyes-cyclops-visor.png', weight: 2 },
+    { path: '/eyes-beach-sunglasses.png', weight: 3 },
+    { path: '/eyes-eye-mask.png', weight: 5 },
+    { path: '/eyes-3d-glasses.png', weight: 9 },
+    { path: '/eyes-cool-shades.png', weight: 15 },
+    { path: '/eyes-none.png', weight: 65 },
+];
+
+const MOUTHS = [
+    { path: '/mouth-pipe.png', weight: 5 },
+    { path: '/mouth-cigarette.png', weight: 8 },
+    { path: '/mouth-vape.png', weight: 12 },
+    { path: '/mouth-none.png', weight: 75 },
+];
+
+const ACCESSORIES = [
+    { path: '/accessory-gold-earring.png', weight: 3 },
+    { path: '/accessory-silver-earring.png', weight: 8 },
+    { path: '/accessory-none.png', weight: 89 },
 ];
 
 // =========================================================================
@@ -75,40 +122,85 @@ const selectWeightedRandom = <T extends { path: string; weight: number }>(items:
 // --- RARITY CALCULATION ---
 // =========================================================================
 
-const calculateRarity = (bgWeight: number, bodyWeight: number, headWeight: number): { score: number; rank: string } => {
+const calculateRarity = (
+    bgWeight: number,
+    typeWeight: number,
+    headWeight: number,
+    bodyWeight: number,
+    eyesWeight: number,
+    mouthWeight: number,
+    accessoryWeight: number
+): { score: number; rank: string } => {
     // Calculate combined rarity score (lower weight = rarer = higher score)
     // We invert the weights so rare traits give higher scores
     const bgScore = 100 - bgWeight;
-    const bodyScore = 100 - bodyWeight;
+    const typeScore = 100 - typeWeight;
     const headScore = 100 - headWeight;
+    const bodyScore = 100 - bodyWeight;
+    const eyesScore = 100 - eyesWeight;
+    const mouthScore = 100 - mouthWeight;
+    const accessoryScore = 100 - accessoryWeight;
 
     // Average the scores
-    const totalScore = (bgScore + bodyScore + headScore) / 3;
+    const totalScore = (bgScore + typeScore + headScore + bodyScore + eyesScore + mouthScore + accessoryScore) / 7;
 
     // Determine rank based on score
     let rank = '';
-    if (totalScore >= 85) rank = 'LEGENDARY';
-    else if (totalScore >= 75) rank = 'EPIC';
+    if (totalScore >= 90) rank = 'LEGENDARY';
+    else if (totalScore >= 80) rank = 'EPIC';
+    else if (totalScore >= 70) rank = 'RARE';
     else rank = 'COMMON';
 
     return { score: Math.round(totalScore), rank };
 };
 
 // =========================================================================
-// --- FROG GENERATION FUNCTION ---
+// --- FROG GENERATION FUNCTION (NOW INCLUDES ALL TRAITS) ---
 // =========================================================================
 
-const generateFrogImage = async (): Promise<{ image: string; rarity: { score: number; rank: string } }> => {
+const generateFrogImage = async (): Promise<{ 
+    image: string; 
+    rarity: { score: number; rank: string };
+    traits: {
+        background: { path: string; weight: number };
+        type: { path: string; weight: number };
+        head: { path: string; weight: number };
+        body: { path: string; weight: number };
+        eyes: { path: string; weight: number };
+        mouth: { path: string; weight: number };
+        accessory: { path: string; weight: number };
+    }
+}> => {
     return new Promise((resolve, reject) => {
         // Randomly select traits with weighted probabilities
         const background = selectWeightedRandom(BACKGROUNDS);
-        const body = selectWeightedRandom(BODIES);
+        const type = selectWeightedRandom(TYPES);
         const head = selectWeightedRandom(HEADS);
+        const body = selectWeightedRandom(BODIES);
+        const eyes = selectWeightedRandom(EYES);
+        const mouth = selectWeightedRandom(MOUTHS);
+        const accessory = selectWeightedRandom(ACCESSORIES);
 
-        console.log('🎨 Generating frog with:', { background: background.path, body: body.path, head: head.path });
+        console.log('🎨 Generating frog with:', { 
+            background: background.path, 
+            type: type.path, 
+            head: head.path,
+            body: body.path,
+            eyes: eyes.path,
+            mouth: mouth.path,
+            accessory: accessory.path
+        });
 
         // Calculate rarity
-        const rarity = calculateRarity(background.weight, body.weight, head.weight);
+        const rarity = calculateRarity(
+            background.weight,
+            type.weight,
+            head.weight,
+            body.weight,
+            eyes.weight,
+            mouth.weight,
+            accessory.weight
+        );
         console.log('✨ Rarity:', rarity);
 
         // Create canvas
@@ -126,23 +218,43 @@ const generateFrogImage = async (): Promise<{ image: string; rarity: { score: nu
         ctx.imageSmoothingEnabled = false;
 
         let loadedImages = 0;
-        const totalImages = 3;
+        const totalImages = 7;
 
         const bgImg = new Image();
-        const bodyImg = new Image();
+        const typeImg = new Image();
         const headImg = new Image();
+        const bodyImg = new Image();
+        const eyesImg = new Image();
+        const mouthImg = new Image();
+        const accessoryImg = new Image();
 
         const checkAllLoaded = () => {
             loadedImages++;
             if (loadedImages === totalImages) {
-                // Draw layers in order: background -> body -> head
+                // Draw layers in order: background -> type -> head -> body -> eyes -> mouth -> accessory
                 ctx.drawImage(bgImg, 0, 0, 320, 320);
-                ctx.drawImage(bodyImg, 0, 0, 320, 320);
+                ctx.drawImage(typeImg, 0, 0, 320, 320);
                 ctx.drawImage(headImg, 0, 0, 320, 320);
+                ctx.drawImage(bodyImg, 0, 0, 320, 320);
+                ctx.drawImage(eyesImg, 0, 0, 320, 320);
+                ctx.drawImage(mouthImg, 0, 0, 320, 320);
+                ctx.drawImage(accessoryImg, 0, 0, 320, 320);
 
                 // Convert to data URL
                 const dataUrl = canvas.toDataURL('image/png');
-                resolve({ image: dataUrl, rarity });
+                resolve({ 
+                    image: dataUrl, 
+                    rarity,
+                    traits: {
+                        background,
+                        type,
+                        head,
+                        body,
+                        eyes,
+                        mouth,
+                        accessory
+                    }
+                });
             }
         };
 
@@ -150,13 +262,29 @@ const generateFrogImage = async (): Promise<{ image: string; rarity: { score: nu
         bgImg.onerror = () => reject(new Error('Failed to load background'));
         bgImg.src = background.path;
 
-        bodyImg.onload = checkAllLoaded;
-        bodyImg.onerror = () => reject(new Error('Failed to load body'));
-        bodyImg.src = body.path;
+        typeImg.onload = checkAllLoaded;
+        typeImg.onerror = () => reject(new Error('Failed to load type'));
+        typeImg.src = type.path;
 
         headImg.onload = checkAllLoaded;
         headImg.onerror = () => reject(new Error('Failed to load head'));
         headImg.src = head.path;
+
+        bodyImg.onload = checkAllLoaded;
+        bodyImg.onerror = () => reject(new Error('Failed to load body'));
+        bodyImg.src = body.path;
+
+        eyesImg.onload = checkAllLoaded;
+        eyesImg.onerror = () => reject(new Error('Failed to load eyes'));
+        eyesImg.src = eyes.path;
+
+        mouthImg.onload = checkAllLoaded;
+        mouthImg.onerror = () => reject(new Error('Failed to load mouth'));
+        mouthImg.src = mouth.path;
+
+        accessoryImg.onload = checkAllLoaded;
+        accessoryImg.onerror = () => reject(new Error('Failed to load accessory'));
+        accessoryImg.src = accessory.path;
     });
 };
 
@@ -173,8 +301,20 @@ export default function Home() {
     // Track which program the user's token belongs to (Standard or 2022)
     const [tokenProgramId, setTokenProgramId] = useState<PublicKey>(TOKEN_PROGRAM_ID);
 
-    // Frog generation state
-    const [generatedFrog, setGeneratedFrog] = useState<{ image: string; rarity: { score: number; rank: string } } | null>(null);
+    // Frog generation state (NOW INCLUDES ALL 7 TRAITS)
+    const [generatedFrog, setGeneratedFrog] = useState<{ 
+        image: string; 
+        rarity: { score: number; rank: string };
+        traits: {
+            background: { path: string; weight: number };
+            type: { path: string; weight: number };
+            head: { path: string; weight: number };
+            body: { path: string; weight: number };
+            eyes: { path: string; weight: number };
+            mouth: { path: string; weight: number };
+            accessory: { path: string; weight: number };
+        }
+    } | null>(null);
 
     useEffect(() => { setIsClient(true); }, []);
 
@@ -309,8 +449,6 @@ export default function Home() {
 
     }, [connection, tokenProgramId]);
 
-    // Replace your existing handleMint function with this updated version:
-
     const handleMint = useCallback(async () => {
         if (!connected || !publicKey || isMinting) return;
 
@@ -340,12 +478,12 @@ export default function Home() {
 
             console.log(`🎉 Success! TX: ${signature}`);
 
-            // ✨ GENERATE THE FROG ✨
+            // ✨ GENERATE THE FROG (NOW WITH ALL 7 TRAITS) ✨
             console.log('🐸 Generating your frog...');
             const frogData = await generateFrogImage();
             setGeneratedFrog(frogData);
 
-            // 💾 SAVE FROG TO MONGODB
+            // 💾 SAVE FROG TO MONGODB (NOW INCLUDING ALL TRAITS)
             try {
                 console.log('💾 Saving frog to database...');
                 const saveResponse = await fetch('/api/frogs/save', {
@@ -355,7 +493,7 @@ export default function Home() {
                     },
                     body: JSON.stringify({
                         walletAddress: publicKey.toString(),
-                        frogData: frogData,
+                        frogData: frogData, // This now includes all 7 traits
                         signature: signature
                     })
                 });
@@ -525,7 +663,8 @@ export default function Home() {
                                                     color:
                                                         generatedFrog.rarity.rank === 'LEGENDARY' ? '#ff6b35' :
                                                             generatedFrog.rarity.rank === 'EPIC' ? '#a855f7' :
-                                                                '#6ade8a'
+                                                                generatedFrog.rarity.rank === 'RARE' ? '#3b82f6' :
+                                                                    '#6ade8a'
                                                 }}
                                             >
                                                 Rarity Score: {generatedFrog.rarity.score}

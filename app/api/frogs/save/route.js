@@ -18,14 +18,47 @@ export async function POST(request) {
     const db = client.db('federation_of_frogs');
     const frogsCollection = db.collection('frogs');
 
+    // Prepare the frog document with all 7 traits
     const frogDocument = {
       walletAddress,
       signature,
       imageData: frogData.image,
       rarity: frogData.rarity,
       mintedAt: new Date(),
-      traits: frogData.traits || {}
+      // Save all 7 trait categories
+      traits: frogData.traits ? {
+        background: {
+          path: frogData.traits.background.path,
+          weight: frogData.traits.background.weight
+        },
+        type: {
+          path: frogData.traits.type.path,
+          weight: frogData.traits.type.weight
+        },
+        head: {
+          path: frogData.traits.head.path,
+          weight: frogData.traits.head.weight
+        },
+        body: {
+          path: frogData.traits.body.path,
+          weight: frogData.traits.body.weight
+        },
+        eyes: {
+          path: frogData.traits.eyes.path,
+          weight: frogData.traits.eyes.weight
+        },
+        mouth: {
+          path: frogData.traits.mouth.path,
+          weight: frogData.traits.mouth.weight
+        },
+        accessory: {
+          path: frogData.traits.accessory.path,
+          weight: frogData.traits.accessory.weight
+        }
+      } : null
     };
+
+    console.log('💾 Saving frog with all 7 traits:', frogDocument.traits);
 
     const result = await frogsCollection.insertOne(frogDocument);
 

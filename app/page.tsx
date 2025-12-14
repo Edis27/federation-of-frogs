@@ -55,7 +55,7 @@ export default function LandingPage() {
             {/* Social Links - Top Right */}
             <div className="absolute top-6 right-6 z-20 flex gap-4">
                 <a
-                    href="https://x.com/pogcult"
+                    href="https://x.com/FedOfFrogs"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-14 h-14 rounded-full overflow-hidden border-2 border-green-500 hover:border-green-400 transition-all hover:scale-110"
