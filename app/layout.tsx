@@ -17,6 +17,7 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 // Try the standard Helius RPC format
 const endpoint = 'https://rpc.helius.xyz/?api-key=7a3e3e81-3a09-4804-8148-e4b4c3f53d33';
 
+
 const wallets = [
    new PhantomWalletAdapter(),
    new SolflareWalletAdapter(),
