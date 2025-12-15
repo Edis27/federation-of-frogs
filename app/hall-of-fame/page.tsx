@@ -104,8 +104,8 @@ export default function HallOfFame() {
                             else if (index === 2) glowColor = '0 0 30px rgba(205, 127, 50, 0.8), 0 0 60px rgba(205, 127, 50, 0.5)'; // Bronze
 
                             return (
-                                <div 
-                                    key={frog._id} 
+                                <div
+                                    key={frog._id}
                                     className="cursor-pointer relative"
                                     onClick={() => setSelectedFrog(frog)}
                                 >
@@ -114,9 +114,9 @@ export default function HallOfFame() {
                                         src={frog.imageData}
                                         alt={`Frog #${index + 1}`}
                                         className="w-full h-auto rounded-lg transition-all duration-300 hover:scale-110 hover:translate-x-[-2px] hover:translate-y-[-2px] relative z-10"
-                                        style={{ 
+                                        style={{
                                             imageRendering: 'pixelated',
-                                            boxShadow: glowColor 
+                                            boxShadow: glowColor
                                                 ? `6px 6px 0 0 rgba(0, 0, 0, 0.3), ${glowColor}`
                                                 : '6px 6px 0 0 rgba(0, 0, 0, 0.3)'
                                         }}
@@ -144,11 +144,12 @@ export default function HallOfFame() {
 
             {/* FROG DETAIL MODAL */}
             {selectedFrog && (
-                <div 
-                    className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
-                    onClick={() => setSelectedFrog(null)}
-                >
-                    <div 
+                <div
+                className="fixed inset-0 flex items-center justify-center z-50 p-4"
+                style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(10px)' }}
+                onClick={() => setSelectedFrog(null)}
+            >
+                    <div
                         className="bg-gray-900 rounded-xl max-w-4xl w-full p-8 relative"
                         onClick={(e) => e.stopPropagation()}
                         style={{ maxHeight: '90vh', overflowY: 'auto' }}
@@ -166,29 +167,35 @@ export default function HallOfFame() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                             {/* Left Side - Frog Image */}
                             <div>
+                                {/* Rank Number */}
+                                <div className="mb-2">
+                                    <p
+                                        className="text-3xl"
+                                        style={{
+                                            fontFamily: "'Press Start 2P', cursive",
+                                            color:
+                                                topFrogs.findIndex(f => f._id === selectedFrog._id) === 0 ? '#FFD700' : // Gold for #1
+                                                    topFrogs.findIndex(f => f._id === selectedFrog._id) === 1 ? '#C0C0C0' : // Silver for #2
+                                                        topFrogs.findIndex(f => f._id === selectedFrog._id) === 2 ? '#CD7F32' : // Bronze for #3
+                                                            '#FFFFFF' // White for #4-10
+                                        }}
+                                    >
+                                        #{topFrogs.findIndex(f => f._id === selectedFrog._id) + 1}
+                                    </p>
+                                </div>
+
                                 <img
                                     src={selectedFrog.imageData}
                                     alt="Selected Frog"
                                     className="w-full h-auto rounded-lg border-4 border-gray-700"
                                     style={{ imageRendering: 'pixelated' }}
                                 />
-                                
+
                                 {/* Rarity Score Below Image */}
                                 <div className="mt-4 bg-black p-4 rounded-lg border-2 border-gray-800">
-                                    <p 
-                                        className="text-center text-xl"
-                                        style={{
-                                            fontFamily: "'Press Start 2P', cursive",
-                                            color:
-                                                selectedFrog.rarity.rank === 'LEGENDARY' ? '#ff6b35' :
-                                                    selectedFrog.rarity.rank === 'EPIC' ? '#a855f7' :
-                                                        '#6ade8a'
-                                        }}
-                                    >
-                                        {selectedFrog.rarity.rank}
-                                    </p>
-                                    <p 
-                                        className="text-center text-sm mt-2 text-gray-400"
+
+                                    <p
+                                        className="text-center text-sm  text-green-400"
                                         style={{ fontFamily: "'Press Start 2P', cursive" }}
                                     >
                                         Rarity: {selectedFrog.rarity.score}
@@ -198,7 +205,7 @@ export default function HallOfFame() {
 
                             {/* Right Side - Traits */}
                             <div>
-                                <h2 
+                                <h2
                                     className="text-2xl mb-6 text-white"
                                     style={{ fontFamily: "'Press Start 2P', cursive" }}
                                 >
@@ -207,183 +214,186 @@ export default function HallOfFame() {
 
                                 {selectedFrog.traits ? (
                                     <div className="space-y-4">
-                                        {/* Background Trait */}
-                                        <div className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <p 
-                                                    className="text-sm text-gray-400"
+                                        {/* First Column of Traits */}
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {/* Background Trait */}
+                                            <div className="bg-gray-800 p-3 rounded-lg border-2 border-gray-700">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <p
+                                                        className="text-xs text-gray-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        BACKGROUND
+                                                    </p>
+                                                    <p
+                                                        className="text-xs text-purple-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        {getRarityPercentage(selectedFrog.traits.background.weight)}
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    className="text-sm text-white"
                                                     style={{ fontFamily: "'Press Start 2P', cursive" }}
                                                 >
-                                                    BACKGROUND
-                                                </p>
-                                                <p 
-                                                    className="text-sm text-purple-400"
-                                                    style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                                >
-                                                    {getRarityPercentage(selectedFrog.traits.background.weight)}
-                                                </p>
-                                            </div>
-                                            <p 
-                                                className="text-lg text-white"
-                                                style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                            >
-                                                {getTraitName(selectedFrog.traits.background.path)}
-                                            </p>
-                                        </div>
-
-                                        {/* Type Trait */}
-                                        <div className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <p 
-                                                    className="text-sm text-gray-400"
-                                                    style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                                >
-                                                    TYPE
-                                                </p>
-                                                <p 
-                                                    className="text-sm text-purple-400"
-                                                    style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                                >
-                                                    {getRarityPercentage(selectedFrog.traits.type.weight)}
+                                                    {getTraitName(selectedFrog.traits.background.path)}
                                                 </p>
                                             </div>
-                                            <p 
-                                                className="text-lg text-white"
-                                                style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                            >
-                                                {getTraitName(selectedFrog.traits.type.path)}
-                                            </p>
-                                        </div>
 
-                                        {/* Head Trait */}
-                                        <div className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <p 
-                                                    className="text-sm text-gray-400"
+                                            {/* Type Trait */}
+                                            <div className="bg-gray-800 p-3 rounded-lg border-2 border-gray-700">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <p
+                                                        className="text-xs text-gray-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        TYPE
+                                                    </p>
+                                                    <p
+                                                        className="text-xs text-purple-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        {getRarityPercentage(selectedFrog.traits.type.weight)}
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    className="text-sm text-white"
                                                     style={{ fontFamily: "'Press Start 2P', cursive" }}
                                                 >
-                                                    HEAD
-                                                </p>
-                                                <p 
-                                                    className="text-sm text-purple-400"
-                                                    style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                                >
-                                                    {getRarityPercentage(selectedFrog.traits.head.weight)}
+                                                    {getTraitName(selectedFrog.traits.type.path)}
                                                 </p>
                                             </div>
-                                            <p 
-                                                className="text-lg text-white"
-                                                style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                            >
-                                                {getTraitName(selectedFrog.traits.head.path)}
-                                            </p>
-                                        </div>
 
-                                        {/* Body Trait */}
-                                        <div className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <p 
-                                                    className="text-sm text-gray-400"
+                                            {/* Head Trait */}
+                                            <div className="bg-gray-800 p-3 rounded-lg border-2 border-gray-700">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <p
+                                                        className="text-xs text-gray-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        HEAD
+                                                    </p>
+                                                    <p
+                                                        className="text-xs text-purple-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        {getRarityPercentage(selectedFrog.traits.head.weight)}
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    className="text-sm text-white"
                                                     style={{ fontFamily: "'Press Start 2P', cursive" }}
                                                 >
-                                                    BODY
-                                                </p>
-                                                <p 
-                                                    className="text-sm text-purple-400"
-                                                    style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                                >
-                                                    {getRarityPercentage(selectedFrog.traits.body.weight)}
+                                                    {getTraitName(selectedFrog.traits.head.path)}
                                                 </p>
                                             </div>
-                                            <p 
-                                                className="text-lg text-white"
-                                                style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                            >
-                                                {getTraitName(selectedFrog.traits.body.path)}
-                                            </p>
-                                        </div>
 
-                                        {/* Eyes Trait */}
-                                        <div className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <p 
-                                                    className="text-sm text-gray-400"
+                                            {/* Body Trait */}
+                                            <div className="bg-gray-800 p-3 rounded-lg border-2 border-gray-700">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <p
+                                                        className="text-xs text-gray-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        BODY
+                                                    </p>
+                                                    <p
+                                                        className="text-xs text-purple-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        {getRarityPercentage(selectedFrog.traits.body.weight)}
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    className="text-sm text-white"
                                                     style={{ fontFamily: "'Press Start 2P', cursive" }}
                                                 >
-                                                    EYES
-                                                </p>
-                                                <p 
-                                                    className="text-sm text-purple-400"
-                                                    style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                                >
-                                                    {getRarityPercentage(selectedFrog.traits.eyes.weight)}
+                                                    {getTraitName(selectedFrog.traits.body.path)}
                                                 </p>
                                             </div>
-                                            <p 
-                                                className="text-lg text-white"
-                                                style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                            >
-                                                {getTraitName(selectedFrog.traits.eyes.path)}
-                                            </p>
-                                        </div>
 
-                                        {/* Mouth Trait */}
-                                        <div className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <p 
-                                                    className="text-sm text-gray-400"
+                                            {/* Eyes Trait */}
+                                            <div className="bg-gray-800 p-3 rounded-lg border-2 border-gray-700">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <p
+                                                        className="text-xs text-gray-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        EYES
+                                                    </p>
+                                                    <p
+                                                        className="text-xs text-purple-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        {getRarityPercentage(selectedFrog.traits.eyes.weight)}
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    className="text-sm text-white"
                                                     style={{ fontFamily: "'Press Start 2P', cursive" }}
                                                 >
-                                                    MOUTH
-                                                </p>
-                                                <p 
-                                                    className="text-sm text-purple-400"
-                                                    style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                                >
-                                                    {getRarityPercentage(selectedFrog.traits.mouth.weight)}
+                                                    {getTraitName(selectedFrog.traits.eyes.path)}
                                                 </p>
                                             </div>
-                                            <p 
-                                                className="text-lg text-white"
-                                                style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                            >
-                                                {getTraitName(selectedFrog.traits.mouth.path)}
-                                            </p>
-                                        </div>
 
-                                        {/* Accessory Trait */}
-                                        <div className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <p 
-                                                    className="text-sm text-gray-400"
+                                            {/* Mouth Trait */}
+                                            <div className="bg-gray-800 p-3 rounded-lg border-2 border-gray-700">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <p
+                                                        className="text-xs text-gray-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        MOUTH
+                                                    </p>
+                                                    <p
+                                                        className="text-xs text-purple-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        {getRarityPercentage(selectedFrog.traits.mouth.weight)}
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    className="text-sm text-white"
                                                     style={{ fontFamily: "'Press Start 2P', cursive" }}
                                                 >
-                                                    ACCESSORY
-                                                </p>
-                                                <p 
-                                                    className="text-sm text-purple-400"
-                                                    style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                                >
-                                                    {getRarityPercentage(selectedFrog.traits.accessory.weight)}
+                                                    {getTraitName(selectedFrog.traits.mouth.path)}
                                                 </p>
                                             </div>
-                                            <p 
-                                                className="text-lg text-white"
-                                                style={{ fontFamily: "'Press Start 2P', cursive" }}
-                                            >
-                                                {getTraitName(selectedFrog.traits.accessory.path)}
-                                            </p>
+
+                                            {/* Accessory Trait */}
+                                            <div className="bg-gray-800 p-3 rounded-lg border-2 border-gray-700">
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <p
+                                                        className="text-xs text-gray-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        ACCESSORY
+                                                    </p>
+                                                    <p
+                                                        className="text-xs text-purple-400"
+                                                        style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                    >
+                                                        {getRarityPercentage(selectedFrog.traits.accessory.weight)}
+                                                    </p>
+                                                </div>
+                                                <p
+                                                    className="text-sm text-white"
+                                                    style={{ fontFamily: "'Press Start 2P', cursive" }}
+                                                >
+                                                    {getTraitName(selectedFrog.traits.accessory.path)}
+                                                </p>
+                                            </div>
                                         </div>
 
-                                        {/* Owner */}
-                                        <div className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700 mt-6">
-                                            <p 
+                                        {/* Owner - Full Width */}
+                                        <div className="bg-gray-800 p-4 rounded-lg border-2 border-gray-700 mt-4">
+                                            <p
                                                 className="text-sm text-gray-400 mb-2"
                                                 style={{ fontFamily: "'Press Start 2P', cursive" }}
                                             >
                                                 OWNED BY
                                             </p>
-                                            <p 
+                                            <p
                                                 className="text-xs text-white break-all"
                                                 style={{ fontFamily: "'Courier New', monospace" }}
                                             >
@@ -393,7 +403,7 @@ export default function HallOfFame() {
                                     </div>
                                 ) : (
                                     <div className="bg-gray-800 p-6 rounded-lg border-2 border-gray-700">
-                                        <p 
+                                        <p
                                             className="text-center text-gray-400"
                                             style={{ fontFamily: "'Press Start 2P', cursive" }}
                                         >
