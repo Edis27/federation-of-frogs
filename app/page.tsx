@@ -41,7 +41,7 @@ export default function LandingPage() {
                     HOME
                 </button>
                 <button onClick={() => router.push('/mint')} className="nav-link">
-                    MINTING BAY
+                    FROG FOREST
                 </button>
                 <button onClick={() => router.push('/fotd')} className="nav-link">
                     F.O.T.D
@@ -134,7 +134,7 @@ export default function LandingPage() {
                         minWidth: '300px',
                     }}
                 >
-                    ENTER MINTING BAY
+                    ENTER FROG FOREST
                 </button>
             </div>
 

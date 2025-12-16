@@ -63,14 +63,23 @@ export default function HallOfFame() {
     };
 
     return (
-        <main className="min-h-screen w-full relative flex flex-col items-center p-4 text-white font-mono">
+        <main
+            className="min-h-screen w-full relative flex flex-col items-center p-4 text-white font-mono"
+            style={{
+                backgroundImage: "url('/hall-of-fame-background.png')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundAttachment: 'fixed',
+                backgroundRepeat: 'no-repeat'
+            }}
+        >
             {/* NAVIGATION */}
             <div className="absolute top-6 left-6 z-20 flex gap-6">
                 <button onClick={() => router.push('/')} className="nav-link">
                     HOME
                 </button>
                 <button onClick={() => router.push('/mint')} className="nav-link">
-                    MINTING BAY
+                    FROG FOREST
                 </button>
                 <button onClick={() => router.push('/fotd')} className="nav-link">
                     F.O.T.D
@@ -145,10 +154,10 @@ export default function HallOfFame() {
             {/* FROG DETAIL MODAL */}
             {selectedFrog && (
                 <div
-                className="fixed inset-0 flex items-center justify-center z-50 p-4"
-                style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(10px)' }}
-                onClick={() => setSelectedFrog(null)}
-            >
+                    className="fixed inset-0 flex items-center justify-center z-50 p-4"
+                    style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(10px)' }}
+                    onClick={() => setSelectedFrog(null)}
+                >
                     <div
                         className="bg-gray-900 rounded-xl max-w-4xl w-full p-8 relative"
                         onClick={(e) => e.stopPropagation()}

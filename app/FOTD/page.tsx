@@ -36,11 +36,11 @@ const PRIZE_PERCENTAGE = 0.25; // 0.25% of treasury balance
 export default function FOTDPage() {
     const router = useRouter();
     const { connection } = useConnection();
-    
+
     const [fotdData, setFotdData] = useState<FOTDData | null>(null);
     const [timeLeft, setTimeLeft] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
-    
+
     // Prize pool state
     const [prizePool, setPrizePool] = useState<string>('0');
     const [isPrizeLoading, setIsPrizeLoading] = useState(true);
@@ -155,13 +155,13 @@ export default function FOTDPage() {
     useEffect(() => {
         fetchFOTDData();
         fetchPrizePool();
-        
+
         // Poll for updates every 10 seconds
         const pollInterval = setInterval(() => {
             fetchFOTDData();
             fetchPrizePool();
         }, 10000);
-        
+
         return () => clearInterval(pollInterval);
     }, []);
 
@@ -171,10 +171,11 @@ export default function FOTDPage() {
         <main
             className="min-h-screen w-full relative flex flex-col items-center justify-center p-4 text-white"
             style={{
-                backgroundImage: 'url(/landing-background.png)',
+                backgroundImage: "url('/fotd-background.png')",
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed',
+                backgroundRepeat: 'no-repeat'
             }}
         >
             {/* Dark overlay */}
@@ -186,7 +187,7 @@ export default function FOTDPage() {
                     HOME
                 </button>
                 <button onClick={() => router.push('/mint')} className="nav-link">
-                    MINTING BAY
+                    FROG FOREST
                 </button>
                 <button onClick={() => router.push('/fotd')} className="nav-link">
                     F.O.T.D
@@ -199,14 +200,14 @@ export default function FOTDPage() {
             {/* Timer Display - Conditionally positioned (only when frog exists) */}
             {hasFrog && (
                 <div className="absolute top-6 right-6 z-20 w-64 bg-gray-800 p-3 rounded-xl border-4 border-gray-700 transition-all duration-500">
-                    <p 
+                    <p
                         className="text-green-300 text-center mb-2 text-[8px]"
                         style={{ fontFamily: "'Press Start 2P', cursive" }}
                     >
                         TIME REMAINING
                     </p>
                     <div className="bg-black p-2 rounded-lg border-2 border-gray-900">
-                        <p 
+                        <p
                             className="text-xl text-yellow-400 font-bold text-center"
                             style={{ fontFamily: "'Press Start 2P', cursive" }}
                         >
@@ -214,17 +215,17 @@ export default function FOTDPage() {
                         </p>
                     </div>
                     {/* Prize Info */}
-                    <div 
+                    <div
                         className="mt-2 bg-black p-2 rounded-lg border-2 border-gray-900"
                         style={{ boxShadow: '0 0 30px rgba(255, 215, 0, 0.4)' }}
                     >
-                        <p 
+                        <p
                             className="text-[8px] text-yellow-400 font-bold text-center"
                             style={{ fontFamily: "'Press Start 2P', cursive" }}
                         >
                             $Ribbit Prize Pool:
                         </p>
-                        <p 
+                        <p
                             className="text-[10px] text-green-400 font-bold text-center mt-1"
                             style={{ fontFamily: "'Press Start 2P', cursive" }}
                         >
@@ -271,7 +272,7 @@ export default function FOTDPage() {
                     </div>
                 ) : fotdData?.currentFrog ? (
                     <div className="w-full max-w-md bg-gray-800 p-6 rounded-xl border-4 border-gray-700">
-                        
+
 
                         {/* Frog Image */}
                         <div className="mb-4">
