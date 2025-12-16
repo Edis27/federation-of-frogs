@@ -51,15 +51,24 @@ export default function HallOfFame() {
 
     // Helper function to get trait name from path
     const getTraitName = (path: string): string => {
-        const name = path.split('/').pop()?.replace('.png', '').replace('background-', '').replace('body-', '').replace('head-', '') || '';
+        const name = path.split('/').pop()?.replace('.png', '')
+            .replace('background-', '')
+            .replace('body-', '')
+            .replace('head-', '')
+            .replace('type-', '')
+            .replace('eyes-', '')
+            .replace('mouth-', '')
+            .replace('accessory-', '') || '';
         return name.charAt(0).toUpperCase() + name.slice(1);
     };
 
     // Helper function to calculate rarity percentage from weight
     const getRarityPercentage = (weight: number): string => {
-        // Total weights: BACKGROUNDS (100), BODIES (100), HEADS (100)
-        // Percentage = (weight / total) * 100
-        return `${weight}%`;
+        // Total weights are now 1000 (multiplied by 10)
+        // Divide by 10 to get actual percentage
+        const percentage = weight / 10;
+        // Remove trailing .0 but keep .5
+        return `${percentage % 1 === 0 ? percentage.toFixed(0) : percentage.toFixed(1)}%`;
     };
 
     return (
