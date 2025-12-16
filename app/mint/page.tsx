@@ -35,80 +35,74 @@ const RIBBIT_TOKEN_DECIMALS = 6;
 
 
 const BACKGROUNDS = [
-   { path: '/background-blue.png', weight: 20, rarityScore: 15 },
-   { path: '/background-purple.png', weight: 20, rarityScore: 15 },
-   { path: '/background-cocoa.png', weight: 20, rarityScore: 15 },
-   { path: '/background-grey.png', weight: 20, rarityScore: 10 },
-   { path: '/background-pink.png', weight: 20, rarityScore: 15 },
-];
-
-
-const TYPES = [
-   { path: '/type-solana.png', weight: 1, rarityScore: 1000 },      // Ultra rare!
-   { path: '/type-alien.png', weight: 3, rarityScore: 800 },        // Super rare!
-   { path: '/type-skeleton.png', weight: 5, rarityScore: 500 },     // Very rare
-   { path: '/type-zombie.png', weight: 8, rarityScore: 350 },       // Rare
-   { path: '/type-female.png', weight: 38, rarityScore: 15 },       // Common
-   { path: '/type-male.png', weight: 45, rarityScore: 10 },         // Common
-];
-
-
-const HEADS = [
-   { path: '/head-for-a-king.png', weight: 0.1, rarityScore: 1500 },
-   { path: '/head-watermelon.png', weight: 0.3, rarityScore: 1000 },
-   { path: '/head-backwards-solana-cap.png', weight: 0.6, rarityScore: 800 },
-   { path: '/head-halo.png', weight: 2, rarityScore: 500 },
-   { path: '/head-police-hat.png', weight: 3, rarityScore: 350 },
-   { path: '/head-head-band.png', weight: 4, rarityScore: 300 },
-   { path: '/head-swamp-hat.png', weight: 5, rarityScore: 200 },
-   { path: '/head-pirate-bandana.png', weight: 6, rarityScore: 150 },
-   { path: '/head-lucky-hat.png', weight: 7, rarityScore: 120 },
-   { path: '/head-red-punk-hair.png', weight: 8.5, rarityScore: 100 },
-   { path: '/head-red-hair.png', weight: 9.5, rarityScore: 80 },
-   { path: '/head-cowboy-hat.png', weight: 10.5, rarityScore: 60 },
-   { path: '/head-beanie.png', weight: 11.5, rarityScore: 50 },
-   { path: '/head-black-hair.png', weight: 13, rarityScore: 40 },
-   { path: '/head-none.png', weight: 19, rarityScore: 5 },
-];
-
-
-const BODIES = [
-   { path: '/body-diamond-necklace.png', weight: 0.5, rarityScore: 1250 },
-   { path: '/body-tuxedo.png', weight: 2.5, rarityScore: 600 },
-   { path: '/body-pilot-jacket.png', weight: 5, rarityScore: 400 },
-   { path: '/body-kimono.png', weight: 7.5, rarityScore: 180 },
-   { path: '/body-referee-shirt.png', weight: 10, rarityScore: 125 },
-   { path: '/body-safety-vest.png', weight: 12.5, rarityScore: 75 },
-   { path: '/body-bathrobe.png', weight: 15, rarityScore: 60 },
-   { path: '/body-hawaiian.png', weight: 17.5, rarityScore: 40 },
-   { path: '/body-none.png', weight: 30, rarityScore: 5 },
-];
-
-
-const EYES = [
-   { path: '/eyes-solana-vipers.png', weight: 1, rarityScore: 750 },
-   { path: '/eyes-cyclops-visor.png', weight: 2, rarityScore: 650 },
-   { path: '/eyes-beach-sunglasses.png', weight: 3, rarityScore: 450 },
-   { path: '/eyes-eye-mask.png', weight: 5, rarityScore: 250 },
-   { path: '/eyes-3d-glasses.png', weight: 9, rarityScore: 125 },
-   { path: '/eyes-cool-shades.png', weight: 15, rarityScore: 50 },
-   { path: '/eyes-none.png', weight: 65, rarityScore: 5 },
-];
-
-
-const MOUTHS = [
-   { path: '/mouth-pipe.png', weight: 5, rarityScore: 75 },
-   { path: '/mouth-cigarette.png', weight: 8, rarityScore: 50 },
-   { path: '/mouth-vape.png', weight: 12, rarityScore: 25 },
-   { path: '/mouth-none.png', weight: 75, rarityScore: 5 },
-];
-
-
-const ACCESSORIES = [
-   { path: '/accessory-gold-earring.png', weight: 3, rarityScore: 100 },
-   { path: '/accessory-silver-earring.png', weight: 8, rarityScore: 25 },
-   { path: '/accessory-none.png', weight: 89, rarityScore: 5 },
-];
+    { path: '/background-blue.png', weight: 200, rarityScore: 15 },
+    { path: '/background-purple.png', weight: 200, rarityScore: 15 },
+    { path: '/background-cocoa.png', weight: 200, rarityScore: 15 },
+    { path: '/background-grey.png', weight: 200, rarityScore: 10 },
+    { path: '/background-pink.png', weight: 200, rarityScore: 15 },
+ ]; // Total: 1000
+ 
+ const TYPES = [
+    { path: '/type-solana.png', weight: 10, rarityScore: 1000 },      // Ultra rare!
+    { path: '/type-alien.png', weight: 30, rarityScore: 800 },        // Super rare!
+    { path: '/type-skeleton.png', weight: 50, rarityScore: 500 },     // Very rare
+    { path: '/type-zombie.png', weight: 80, rarityScore: 350 },       // Rare
+    { path: '/type-female.png', weight: 380, rarityScore: 15 },       // Common
+    { path: '/type-male.png', weight: 450, rarityScore: 10 },         // Common
+ ]; // Total: 1000
+ 
+ const HEADS = [
+    { path: '/head-for-a-king.png', weight: 1, rarityScore: 1500 },
+    { path: '/head-watermelon.png', weight: 3, rarityScore: 1000 },
+    { path: '/head-backwards-solana-cap.png', weight: 6, rarityScore: 800 },
+    { path: '/head-halo.png', weight: 20, rarityScore: 500 },
+    { path: '/head-police-hat.png', weight: 30, rarityScore: 350 },
+    { path: '/head-head-band.png', weight: 40, rarityScore: 300 },
+    { path: '/head-swamp-hat.png', weight: 50, rarityScore: 200 },
+    { path: '/head-pirate-bandana.png', weight: 60, rarityScore: 150 },
+    { path: '/head-lucky-hat.png', weight: 70, rarityScore: 120 },
+    { path: '/head-red-punk-hair.png', weight: 85, rarityScore: 100 },
+    { path: '/head-red-hair.png', weight: 95, rarityScore: 80 },
+    { path: '/head-cowboy-hat.png', weight: 105, rarityScore: 60 },
+    { path: '/head-beanie.png', weight: 115, rarityScore: 50 },
+    { path: '/head-black-hair.png', weight: 130, rarityScore: 40 },
+    { path: '/head-none.png', weight: 190, rarityScore: 5 },
+ ]; // Total: 1000
+ 
+ const BODIES = [
+    { path: '/body-diamond-necklace.png', weight: 5, rarityScore: 1250 },
+    { path: '/body-tuxedo.png', weight: 25, rarityScore: 600 },
+    { path: '/body-pilot-jacket.png', weight: 50, rarityScore: 400 },
+    { path: '/body-kimono.png', weight: 75, rarityScore: 180 },
+    { path: '/body-referee-shirt.png', weight: 100, rarityScore: 125 },
+    { path: '/body-safety-vest.png', weight: 125, rarityScore: 75 },
+    { path: '/body-bathrobe.png', weight: 150, rarityScore: 60 },
+    { path: '/body-hawaiian.png', weight: 170, rarityScore: 40 },
+    { path: '/body-none.png', weight: 300, rarityScore: 5 },
+ ]; // Total: 1000
+ 
+ const EYES = [
+    { path: '/eyes-solana-vipers.png', weight: 10, rarityScore: 750 },
+    { path: '/eyes-cyclops-visor.png', weight: 20, rarityScore: 650 },
+    { path: '/eyes-beach-sunglasses.png', weight: 30, rarityScore: 450 },
+    { path: '/eyes-eye-mask.png', weight: 50, rarityScore: 250 },
+    { path: '/eyes-3d-glasses.png', weight: 90, rarityScore: 125 },
+    { path: '/eyes-cool-shades.png', weight: 150, rarityScore: 50 },
+    { path: '/eyes-none.png', weight: 650, rarityScore: 5 },
+ ]; // Total: 1000
+ 
+ const MOUTHS = [
+    { path: '/mouth-pipe.png', weight: 50, rarityScore: 75 },
+    { path: '/mouth-cigarette.png', weight: 80, rarityScore: 50 },
+    { path: '/mouth-vape.png', weight: 120, rarityScore: 25 },
+    { path: '/mouth-none.png', weight: 750, rarityScore: 5 },
+ ]; // Total: 1000
+ 
+ const ACCESSORIES = [
+    { path: '/accessory-gold-earring.png', weight: 30, rarityScore: 100 },
+    { path: '/accessory-silver-earring.png', weight: 80, rarityScore: 25 },
+    { path: '/accessory-none.png', weight: 890, rarityScore: 5 },
+ ]; // Total: 1000
 
 
 // =========================================================================
