@@ -6,7 +6,6 @@ import {
   PublicKey,
   Transaction,
   Keypair,
-  clusterApiUrl
 } from '@solana/web3.js';
 import {
   TOKEN_2022_PROGRAM_ID,
@@ -20,10 +19,12 @@ const RIBBIT_MINT_ADDRESS = new PublicKey("8aW5vwBWQP3vTqqHGSGs6MSqnRkSvHnti96b5
 const TREASURY_WALLET = new PublicKey("6hNozPrcywMv5Lyx6VuqaSooWCsNsvQyoXie9W4u8RTK");
 const RIBBIT_TOKEN_DECIMALS = 6;
 
-// This should be called by a cron job every minute to check for expired periods
+// ✅ 1 MINUTE FOR TESTING - Change to 86400000 for 24 hours in production
+const PERIOD_DURATION = 60000; // 1 minute
+
 export async function POST(request) {
   try {
-    // Verify this is a legitimate cron call (you can add authentication here)
+    // Verify this is a legitimate cron call
     const authHeader = request.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
     
@@ -49,11 +50,14 @@ export async function POST(request) {
     });
 
     if (!expiredPeriod) {
+      console.log('⏰ No expired periods - timer still running');
       return NextResponse.json({
         success: true,
         message: 'No expired periods to process'
       });
     }
+
+    console.log('🏆 Processing expired period:', expiredPeriod._id);
 
     // Get the winner (rarest frog during this period)
     const winner = await frogsCollection.findOne({
@@ -66,15 +70,33 @@ export async function POST(request) {
     });
 
     if (!winner) {
-      // No frogs minted during this period, just mark as processed
+      console.log('📭 No frogs minted during this period');
+      
+      // Mark as processed
       await fotdCollection.updateOne(
         { _id: expiredPeriod._id },
         { $set: { winnerProcessed: true, noWinner: true } }
       );
 
+      // ✅ CREATE NEXT PERIOD (NO WINNER CASE)
+      const nextStartTime = expiredPeriod.endTime;
+      const nextEndTime = new Date(nextStartTime.getTime() + PERIOD_DURATION);
+
+      await fotdCollection.insertOne({
+        startTime: nextStartTime,
+        endTime: nextEndTime,
+        winnerProcessed: false,
+        createdAt: now
+      });
+
+      console.log('🔄 Next period created (no winner)');
+      console.log('   Starts:', nextStartTime.toISOString());
+      console.log('   Ends:', nextEndTime.toISOString());
+
       return NextResponse.json({
         success: true,
-        message: 'No frogs minted during period'
+        message: 'No frogs minted during period - next period created',
+        nextPeriodEnds: nextEndTime.toISOString()
       });
     }
 
@@ -110,15 +132,30 @@ export async function POST(request) {
       const payoutAmount = currentBalance / BigInt(4);
 
       if (payoutAmount === BigInt(0)) {
-        console.log('Treasury balance too low for payout');
+        console.log('💰 Treasury balance too low for payout');
+        
         await fotdCollection.updateOne(
           { _id: expiredPeriod._id },
           { $set: { winnerProcessed: true, payoutSkipped: true, reason: 'insufficient_balance' } }
         );
 
+        // ✅ CREATE NEXT PERIOD (INSUFFICIENT BALANCE CASE)
+        const nextStartTime = expiredPeriod.endTime;
+        const nextEndTime = new Date(nextStartTime.getTime() + PERIOD_DURATION);
+
+        await fotdCollection.insertOne({
+          startTime: nextStartTime,
+          endTime: nextEndTime,
+          winnerProcessed: false,
+          createdAt: now
+        });
+
+        console.log('🔄 Next period created (insufficient balance)');
+
         return NextResponse.json({
           success: true,
-          message: 'Treasury balance too low'
+          message: 'Treasury balance too low - next period created',
+          nextPeriodEnds: nextEndTime.toISOString()
         });
       }
 
@@ -201,20 +238,39 @@ export async function POST(request) {
         }
       );
 
-      console.log(`✅ FOTD payout successful! Winner: ${winner.walletAddress}, Amount: ${payoutAmount}, TX: ${signature}`);
+      // ✅ CREATE NEXT PERIOD (SUCCESS CASE)
+      const nextStartTime = expiredPeriod.endTime;
+      const nextEndTime = new Date(nextStartTime.getTime() + PERIOD_DURATION);
+
+      await fotdCollection.insertOne({
+        startTime: nextStartTime,
+        endTime: nextEndTime,
+        winnerProcessed: false,
+        createdAt: now
+      });
+
+      console.log('✅ FOTD payout successful!');
+      console.log('   Winner:', winner.walletAddress);
+      console.log('   Rarity:', winner.rarity.score);
+      console.log('   Amount:', payoutAmount.toString());
+      console.log('   TX:', signature);
+      console.log('🔄 Next period created');
+      console.log('   Starts:', nextStartTime.toISOString());
+      console.log('   Ends:', nextEndTime.toISOString());
 
       return NextResponse.json({
         success: true,
         winner: winner.walletAddress,
         rarityScore: winner.rarity.score,
         payoutAmount: payoutAmount.toString(),
-        signature
+        signature,
+        nextPeriodEnds: nextEndTime.toISOString()
       });
 
     } catch (payoutError) {
-      console.error('Error processing payout:', payoutError);
+      console.error('❌ Error processing payout:', payoutError);
       
-      // Mark as processed with error to avoid retry loops
+      // Mark as processed with error
       await fotdCollection.updateOne(
         { _id: expiredPeriod._id },
         {
@@ -226,11 +282,24 @@ export async function POST(request) {
         }
       );
 
+      // ✅ CREATE NEXT PERIOD (ERROR CASE)
+      const nextStartTime = expiredPeriod.endTime;
+      const nextEndTime = new Date(nextStartTime.getTime() + PERIOD_DURATION);
+
+      await fotdCollection.insertOne({
+        startTime: nextStartTime,
+        endTime: nextEndTime,
+        winnerProcessed: false,
+        createdAt: now
+      });
+
+      console.log('🔄 Next period created (after error)');
+
       throw payoutError;
     }
 
   } catch (error) {
-    console.error('Error in FOTD winner processing:', error);
+    console.error('❌ Error in FOTD winner processing:', error);
     return NextResponse.json(
       { error: 'Failed to process FOTD winner', details: error.message },
       { status: 500 }

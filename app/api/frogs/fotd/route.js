@@ -2,8 +2,8 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 
-// TESTING: 3 minutes (180000 ms) - Change to 86400000 for 24 hours in production
-const PERIOD_DURATION = 180000; // 3 minutes for testing
+// ✅ 1 MINUTE FOR TESTING - Change to 86400000 for 24 hours in production
+const PERIOD_DURATION = 60000; // 1 minute
 
 export async function GET() {
   try {
@@ -19,19 +19,35 @@ export async function GET() {
       endTime: { $gt: now }
     });
 
-    // If no active period exists, create a new one
+    // ✅ AUTO-INITIALIZE: If no active period exists, create one
+    // This happens automatically on first request (no manual intervention needed)
     if (!currentPeriod) {
-      const startTime = new Date();
+      console.log('🚀 No active period found - auto-initializing timer');
+      
+      const startTime = now;
       const endTime = new Date(startTime.getTime() + PERIOD_DURATION);
 
+      const result = await fotdCollection.insertOne({
+        startTime,
+        endTime,
+        winnerProcessed: false,
+        createdAt: now,
+        autoInitialized: true
+      });
+
+      console.log('✅ Timer auto-initialized');
+      console.log('   Period ID:', result.insertedId);
+      console.log('   Starts:', startTime.toISOString());
+      console.log('   Ends:', endTime.toISOString());
+      console.log('🤖 Cron will now manage all future periods');
+
       currentPeriod = {
+        _id: result.insertedId,
         startTime,
         endTime,
         winnerProcessed: false,
         createdAt: now
       };
-
-      await fotdCollection.insertOne(currentPeriod);
     }
 
     // Get the rarest frog minted during this period
