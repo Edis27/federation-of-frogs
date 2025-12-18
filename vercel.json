@@ -1,8 +1,6 @@
 {
-    "crons": [
-      {
-        "path": "/api/frogs/fotd/process-winner",
-        "schedule": "0 0 * * *"
-      }
-    ]
-  }
+  "crons": [{
+    "path": "/api/frogs/fotd/process-winner",
+    "schedule": "* * * * *"
+  }]
+}

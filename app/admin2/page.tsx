@@ -29,7 +29,7 @@ export default function AdminPage() {
                 setMessage(`❌ Error: ${data.error}`);
             }
         } catch (error) {
-            setMessage(`❌ Error: ${error.message}`);
+            setMessage(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
             console.error('Error clearing frogs:', error);
         } finally {
             setIsClearing(false);
