@@ -671,24 +671,33 @@ export default function Home() {
 
                     {/* TOP RIGHT - WALLET BUTTON (ABSOLUTE POSITIONING) */}
                     <div className="absolute top-6 right-6 z-10">
-                        <WalletMultiButton
-                            style={{
-                                borderRadius: '9999px',
-                                background: 'linear-gradient(90deg, #9945FF 0%, #14F195 100%)',
-                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-                                transition: 'all 0.3s ease',
-                            }}
+                        <div
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'scale(1.05)';
-                                e.currentTarget.style.boxShadow = '0 20px 25px -5px rgb(153 69 255 / 0.5), 0 8px 10px -6px rgb(153 69 255 / 0.5)';
+                                const button = e.currentTarget.firstElementChild as HTMLElement;
+                                if (button) {
+                                    button.style.transform = 'scale(1.05)';
+                                    button.style.boxShadow = '0 20px 25px -5px rgb(153 69 255 / 0.5), 0 8px 10px -6px rgb(153 69 255 / 0.5)';
+                                }
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'scale(1)';
-                                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)';
+                                const button = e.currentTarget.firstElementChild as HTMLElement;
+                                if (button) {
+                                    button.style.transform = 'scale(1)';
+                                    button.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)';
+                                }
                             }}
                         >
-                            {connected ? 'Connected' : 'Connect Wallet'}
-                        </WalletMultiButton>
+                            <WalletMultiButton
+                                style={{
+                                    borderRadius: '9999px',
+                                    background: 'linear-gradient(90deg, #9945FF 0%, #14F195 100%)',
+                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                {connected ? 'Connected' : 'Connect Wallet'}
+                            </WalletMultiButton>
+                        </div>
                     </div>
 
 
