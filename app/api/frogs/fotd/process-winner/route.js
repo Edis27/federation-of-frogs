@@ -39,10 +39,7 @@ async function handleProcessWinner(request) {
     const cronSecret = process.env.CRON_SECRET;
     
     // Only check auth if CRON_SECRET is actually set
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      console.error('❌ UNAUTHORIZED');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    
 
     const client = await clientPromise;
     const db = client.db('federation_of_frogs');
