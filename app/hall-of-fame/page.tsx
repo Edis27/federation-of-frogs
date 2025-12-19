@@ -76,19 +76,19 @@ export default function HallOfFame() {
                 backgroundRepeat: 'no-repeat'
             }}
         >
-            {/* NAVIGATION - Mobile Responsive - Horizontal on mobile, fits above title */}
-            <div className="absolute top-4 md:top-4 left-4 right-4 z-20 flex flex-row justify-start gap-1 md:gap-6 md:right-auto">
-                <button onClick={() => router.push('/')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
+            {/* NAVIGATION - Mobile Responsive */}
+            <div className="absolute top-4 left-0 right-0 md:left-4 md:right-auto z-20 flex flex-row justify-center md:justify-start gap-2 md:gap-6 px-2">
+                <button onClick={() => router.push('/')} className="nav-link text-[6px] md:text-xs whitespace-nowrap">
                     HOME
                 </button>
-                <button onClick={() => router.push('/mint')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
-                    FOREST
+                <button onClick={() => router.push('/mint')} className="nav-link text-[6px] md:text-xs whitespace-nowrap">
+                    FROG FOREST
                 </button>
-                <button onClick={() => router.push('/fotd')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
+                <button onClick={() => router.push('/fotd')} className="nav-link text-[6px] md:text-xs whitespace-nowrap">
                     F.O.T.D
                 </button>
-                <button onClick={() => router.push('/hall-of-fame')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
-                    HALL
+                <button onClick={() => router.push('/hall-of-fame')} className="nav-link text-[6px] md:text-xs whitespace-nowrap">
+                    HALL OF FAME
                 </button>
             </div>
 
