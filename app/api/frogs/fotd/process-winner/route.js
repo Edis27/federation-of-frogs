@@ -39,7 +39,10 @@ async function handleProcessWinner(request) {
     const cronSecret = process.env.CRON_SECRET;
     
     // Only check auth if CRON_SECRET is actually set
-    
+    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+      console.error('❌ UNAUTHORIZED');
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const client = await clientPromise;
     const db = client.db('federation_of_frogs');
@@ -144,8 +147,8 @@ async function handleProcessWinner(request) {
         { $set: { winnerProcessed: true, noWinner: true } }
       );
 
-      // Create next period
-      const nextStartTime = expiredPeriod.endTime;
+      // Create next period starting NOW
+      const nextStartTime = now; // ✅ Use current time, not old period's endTime
       const nextEndTime = new Date(nextStartTime.getTime() + PERIOD_DURATION);
 
       await fotdCollection.insertOne({
@@ -214,8 +217,8 @@ async function handleProcessWinner(request) {
           { $set: { winnerProcessed: true, payoutSkipped: true, reason: 'insufficient_balance' } }
         );
 
-        // Create next period
-        const nextStartTime = expiredPeriod.endTime;
+        // Create next period starting NOW
+        const nextStartTime = now; // ✅ Use current time
         const nextEndTime = new Date(nextStartTime.getTime() + PERIOD_DURATION);
 
         await fotdCollection.insertOne({
@@ -315,8 +318,8 @@ async function handleProcessWinner(request) {
         { $set: { winnerProcessed: true, winnerId: winner._id, payoutSignature: signature } }
       );
 
-      // Create next period
-      const nextStartTime = expiredPeriod.endTime;
+      // Create next period starting NOW
+      const nextStartTime = now; // ✅ Use current time
       const nextEndTime = new Date(nextStartTime.getTime() + PERIOD_DURATION);
 
       await fotdCollection.insertOne({
@@ -350,8 +353,8 @@ async function handleProcessWinner(request) {
         { $set: { winnerProcessed: true, payoutFailed: true, error: payoutError.message } }
       );
 
-      // Create next period even after error
-      const nextStartTime = expiredPeriod.endTime;
+      // Create next period even after error, starting NOW
+      const nextStartTime = now; // ✅ Use current time
       const nextEndTime = new Date(nextStartTime.getTime() + PERIOD_DURATION);
 
       await fotdCollection.insertOne({
