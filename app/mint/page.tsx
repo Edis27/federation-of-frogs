@@ -653,18 +653,18 @@ export default function Home() {
             ) : (
                 <>
                     {/* NAVIGATION - Mobile Responsive */}
-                    <div className="absolute top-4 left-4 z-20 flex flex-col md:flex-row gap-2 md:gap-6">
-                        <button onClick={() => router.push('/')} className="nav-link text-[8px] md:text-xs">
+                    <div className="absolute top-4 left-4 right-4 z-20 flex flex-row justify-start gap-1 md:gap-6 md:right-auto">
+                        <button onClick={() => router.push('/')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
                             HOME
                         </button>
-                        <button onClick={() => router.push('/mint')} className="nav-link text-[8px] md:text-xs">
-                            FROG FOREST
+                        <button onClick={() => router.push('/mint')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
+                            FOREST
                         </button>
-                        <button onClick={() => router.push('/fotd')} className="nav-link text-[8px] md:text-xs">
+                        <button onClick={() => router.push('/fotd')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
                             F.O.T.D
                         </button>
-                        <button onClick={() => router.push('/hall-of-fame')} className="nav-link text-[8px] md:text-xs">
-                            HALL OF FAME
+                        <button onClick={() => router.push('/hall-of-fame')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
+                            HALL
                         </button>
                     </div>
 
@@ -703,16 +703,16 @@ export default function Home() {
 
 
                     {/* CENTERED CONTENT - MINTING INTERFACE WRAPPED IN GRAY BOX */}
-                    <div className="max-w-xl w-full flex flex-col items-center gap-8 bg-gray-800 p-8 rounded-xl border-2 border-gray-800 mt-16 md:mt-0">
-                        <h2 className="text-3xl md:text-5xl leading-loose pixel-3d text-center">
+                    <div className="max-w-xl w-full flex flex-col items-center gap-4 md:gap-8 bg-gray-800 p-4 md:p-8 rounded-xl border-2 border-gray-800 mt-16 md:mt-0">
+                        <h2 className="text-2xl md:text-5xl leading-loose pixel-3d text-center">
                             FROG FOREST
                         </h2>
                         {/* Balance Display (Only if connected) */}
                         {connected && (
-                            <div className="w-full bg-gray-800 p-6 rounded-lg border-2 border-gray-700" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}>
-                                <p className="text-green-300 text-center mb-4 text-s" style={{ fontFamily: "'Press Start 2P', cursive" }}>Your $RIBBIT Balance:</p>
-                                <div className="bg-black p-4 rounded-md border border-gray-900">
-                                    <p className="text-xl text-yellow-400 font-bold text-center" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+                            <div className="w-full bg-gray-800 p-3 md:p-6 rounded-lg border-2 border-gray-700" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}>
+                                <p className="text-green-300 text-center mb-2 md:mb-4 text-[8px] md:text-s" style={{ fontFamily: "'Press Start 2P', cursive" }}>Your $RIBBIT Balance:</p>
+                                <div className="bg-black p-2 md:p-4 rounded-md border border-gray-900">
+                                    <p className="text-sm md:text-xl text-yellow-400 font-bold text-center break-all" style={{ fontFamily: "'Press Start 2P', cursive" }}>
                                         {isBalanceLoading ? '...' : parseFloat(ribbitBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </p>
                                 </div>
@@ -735,12 +735,12 @@ export default function Home() {
 
                     {/* FROG DISPLAY OVERLAY */}
                     {generatedFrog && (
-                        <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
-                            <div className="max-w-xl w-full flex flex-col items-center gap-8 bg-gray-800 p-8 rounded-xl border-2 border-gray-800 pointer-events-auto">
-                                <h2 className="text-2xl md:text-3xl pixel-3d text-center">
+                        <div className="absolute inset-0 flex items-center justify-center z-50 p-4 pointer-events-none">
+                            <div className="max-w-xl w-full flex flex-col items-center gap-4 md:gap-8 bg-gray-800 p-4 md:p-8 rounded-xl border-2 border-gray-800 pointer-events-auto">
+                                <h2 className="text-xl md:text-3xl pixel-3d text-center">
                                     YOUR FROG
                                 </h2>
-                                <div className="w-full bg-gray-800 p-6 rounded-lg border-2 border-gray-700" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}>
+                                <div className="w-full bg-gray-800 p-3 md:p-6 rounded-lg border-2 border-gray-700" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}>
                                     <img
                                         src={generatedFrog.image}
                                         alt="Your Generated Frog"
@@ -750,9 +750,9 @@ export default function Home() {
 
                                     {/* RARITY DISPLAY */}
                                     <div>
-                                        <div className="bg-black p-4 rounded-md border border-gray-900 mt-2">
+                                        <div className="bg-black p-2 md:p-4 rounded-md border border-gray-900 mt-2">
                                             <p
-                                                className="text-center text-sm"
+                                                className="text-center text-xs md:text-sm"
                                                 style={{
                                                     fontFamily: "'Press Start 2P', cursive",
                                                     color:

@@ -172,18 +172,18 @@ export default function FOTDPage() {
             <div className="absolute inset-0 bg-black/40" />
 
             {/* NAVIGATION - Mobile Responsive */}
-            <div className="absolute top-4 left-4 z-20 flex flex-col md:flex-row gap-2 md:gap-6">
-                <button onClick={() => router.push('/')} className="nav-link text-[8px] md:text-xs">
+            <div className="absolute top-4 left-4 right-4 z-20 flex flex-row justify-start gap-1 md:gap-6 md:right-auto">
+                <button onClick={() => router.push('/')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
                     HOME
                 </button>
-                <button onClick={() => router.push('/mint')} className="nav-link text-[8px] md:text-xs">
-                    FROG FOREST
+                <button onClick={() => router.push('/mint')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
+                    FOREST
                 </button>
-                <button onClick={() => router.push('/fotd')} className="nav-link text-[8px] md:text-xs">
+                <button onClick={() => router.push('/fotd')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
                     F.O.T.D
                 </button>
-                <button onClick={() => router.push('/hall-of-fame')} className="nav-link text-[8px] md:text-xs">
-                    HALL OF FAME
+                <button onClick={() => router.push('/hall-of-fame')} className="nav-link text-[7px] md:text-xs whitespace-nowrap">
+                    HALL
                 </button>
             </div>
 
