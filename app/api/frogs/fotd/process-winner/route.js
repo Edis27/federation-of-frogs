@@ -19,16 +19,14 @@ const RIBBIT_MINT_ADDRESS = new PublicKey("8aW5vwBWQP3vTqqHGSGs6MSqnRkSvHnti96b5
 const TREASURY_WALLET = new PublicKey("6hNozPrcywMv5Lyx6VuqaSooWCsNsvQyoXie9W4u8RTK");
 const RIBBIT_TOKEN_DECIMALS = 6;
 
-// ✅ 1 MINUTE FOR TESTING - Change to 86400000 for 24 hours in production
+// ✅ 1 MINUTE FOR TESTING
 const PERIOD_DURATION = 60000; // 1 minute
 
-// ✅ VERCEL CRON USES GET BY DEFAULT
 export async function GET(request) {
   console.log('🤖 CRON JOB TRIGGERED (GET):', new Date().toISOString());
   return handleProcessWinner(request);
 }
 
-// Also support POST for manual testing
 export async function POST(request) {
   console.log('🤖 MANUAL TRIGGER (POST):', new Date().toISOString());
   return handleProcessWinner(request);
@@ -36,22 +34,13 @@ export async function POST(request) {
 
 async function handleProcessWinner(request) {
   try {
-    // Verify this is a legitimate cron call
+    // Verify authorization
     const authHeader = request.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
     
-    console.log('🔐 Auth check:', {
-      hasAuthHeader: !!authHeader,
-      hasCronSecret: !!cronSecret,
-      match: cronSecret && authHeader === `Bearer ${cronSecret}`
-    });
-    
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      console.error('❌ UNAUTHORIZED: Auth header does not match CRON_SECRET');
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      console.error('❌ UNAUTHORIZED');
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const client = await clientPromise;
@@ -62,6 +51,35 @@ async function handleProcessWinner(request) {
 
     const now = new Date();
 
+    // Check if there's ANY period at all
+    const anyPeriod = await fotdCollection.findOne({}, { sort: { endTime: -1 } });
+    
+    if (!anyPeriod) {
+      // 🚀 FIRST TIME SETUP - Create the very first period
+      console.log('🚀 FIRST RUN - Creating initial period');
+      
+      const startTime = now;
+      const endTime = new Date(startTime.getTime() + PERIOD_DURATION);
+
+      await fotdCollection.insertOne({
+        startTime,
+        endTime,
+        winnerProcessed: false,
+        createdAt: now,
+        initialPeriod: true
+      });
+
+      console.log('✅ Initial period created');
+      console.log('   Starts:', startTime.toISOString());
+      console.log('   Ends:', endTime.toISOString());
+      
+      return NextResponse.json({
+        success: true,
+        message: 'Initial period created',
+        periodEndsAt: endTime.toISOString()
+      });
+    }
+
     // Find expired periods that haven't been processed
     const expiredPeriod = await fotdCollection.findOne({
       endTime: { $lte: now },
@@ -69,14 +87,22 @@ async function handleProcessWinner(request) {
     });
 
     if (!expiredPeriod) {
-      console.log('⏰ No expired periods found');
-      
-      // Check if ANY period exists at all
-      const anyPeriod = await fotdCollection.findOne({});
-      
-      if (!anyPeriod) {
-        console.log('🚀 FIRST RUN - Creating initial period');
-        
+      // Check if current period is still active
+      const activePeriod = await fotdCollection.findOne({
+        endTime: { $gt: now }
+      });
+
+      if (activePeriod) {
+        console.log('⏰ Current period still active');
+        console.log('   Ends:', activePeriod.endTime.toISOString());
+        return NextResponse.json({
+          success: true,
+          message: 'No expired periods to process',
+          currentPeriodEnds: activePeriod.endTime.toISOString()
+        });
+      } else {
+        // No active period exists - create one now
+        console.log('🔄 No active period found - creating new period');
         const startTime = now;
         const endTime = new Date(startTime.getTime() + PERIOD_DURATION);
 
@@ -84,26 +110,16 @@ async function handleProcessWinner(request) {
           startTime,
           endTime,
           winnerProcessed: false,
-          createdAt: now,
-          initialPeriod: true
+          createdAt: now
         });
 
-        console.log('✅ Initial period created by cron');
-        console.log('   Starts:', startTime.toISOString());
-        console.log('   Ends:', endTime.toISOString());
-        
+        console.log('✅ New period created');
         return NextResponse.json({
           success: true,
-          message: 'Initial period created',
+          message: 'New period created',
           periodEndsAt: endTime.toISOString()
         });
       }
-      
-      console.log('⏰ Timer still running');
-      return NextResponse.json({
-        success: true,
-        message: 'No expired periods to process'
-      });
     }
 
     console.log('🏆 EXPIRED PERIOD FOUND:');
@@ -166,26 +182,14 @@ async function handleProcessWinner(request) {
         'confirmed'
       );
 
-      // Load treasury keypair from environment variable
       const treasuryPrivateKey = process.env.TREASURY_PRIVATE_KEY;
       if (!treasuryPrivateKey) {
-        console.error('❌ TREASURY_PRIVATE_KEY not found in environment variables!');
         throw new Error('Treasury private key not configured');
       }
-      
-      console.log('🔑 Treasury private key found');
 
-      let treasuryKeypair;
-      try {
-        treasuryKeypair = Keypair.fromSecretKey(bs58.decode(treasuryPrivateKey));
-        console.log('✅ Treasury keypair decoded successfully');
-        console.log('   Public key matches:', treasuryKeypair.publicKey.toString() === TREASURY_WALLET.toString());
-      } catch (keyError) {
-        console.error('❌ Failed to decode treasury private key:', keyError);
-        throw new Error('Invalid treasury private key format');
-      }
+      const treasuryKeypair = Keypair.fromSecretKey(bs58.decode(treasuryPrivateKey));
+      console.log('✅ Treasury keypair loaded');
 
-      // Get treasury token balance
       const treasuryATA = getAssociatedTokenAddressSync(
         RIBBIT_MINT_ADDRESS,
         TREASURY_WALLET,
@@ -193,25 +197,19 @@ async function handleProcessWinner(request) {
         TOKEN_2022_PROGRAM_ID
       );
 
-      console.log('📊 Fetching treasury balance...');
-      console.log('   Treasury ATA:', treasuryATA.toString());
-
       const treasuryBalance = await connection.getTokenAccountBalance(treasuryATA);
       const currentBalance = BigInt(treasuryBalance.value.amount);
 
       console.log('💵 Treasury balance:', treasuryBalance.value.uiAmount, '$RIBBIT');
-      console.log('   Raw amount:', currentBalance.toString());
 
       // Calculate 25% of treasury
       const payoutAmount = currentBalance / BigInt(4);
       const payoutUI = Number(payoutAmount) / Math.pow(10, RIBBIT_TOKEN_DECIMALS);
 
-      console.log('💸 Payout calculation:');
-      console.log('   25% of treasury:', payoutUI, '$RIBBIT');
-      console.log('   Raw amount:', payoutAmount.toString());
+      console.log('💸 Payout: 25% =', payoutUI, '$RIBBIT');
 
       if (payoutAmount === BigInt(0)) {
-        console.log('⚠️ TREASURY BALANCE TOO LOW for payout');
+        console.log('⚠️ Treasury balance too low');
         
         await fotdCollection.updateOne(
           { _id: expiredPeriod._id },
@@ -229,8 +227,6 @@ async function handleProcessWinner(request) {
           createdAt: now
         });
 
-        console.log('🔄 Next period created (insufficient balance)');
-
         return NextResponse.json({
           success: true,
           message: 'Treasury balance too low - next period created',
@@ -239,8 +235,6 @@ async function handleProcessWinner(request) {
       }
 
       // Build transaction
-      console.log('🔨 Building transaction...');
-      
       const winnerWallet = new PublicKey(winner.walletAddress);
       const winnerATA = getAssociatedTokenAddressSync(
         RIBBIT_MINT_ADDRESS,
@@ -249,18 +243,16 @@ async function handleProcessWinner(request) {
         TOKEN_2022_PROGRAM_ID
       );
 
-      console.log('   Winner ATA:', winnerATA.toString());
-
-      const { blockhash } = await connection.getLatestBlockhash('confirmed');
+      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
       const transaction = new Transaction({
         recentBlockhash: blockhash,
         feePayer: TREASURY_WALLET,
       });
 
-      // Check if winner's ATA exists, create if not
+      // Check if winner's ATA exists
       const winnerAccountInfo = await connection.getAccountInfo(winnerATA);
       if (!winnerAccountInfo) {
-        console.log('🆕 Creating winner ATA (account does not exist)');
+        console.log('🆕 Creating winner ATA');
         transaction.add(
           createAssociatedTokenAccountInstruction(
             TREASURY_WALLET,
@@ -270,12 +262,9 @@ async function handleProcessWinner(request) {
             TOKEN_2022_PROGRAM_ID
           )
         );
-      } else {
-        console.log('✅ Winner ATA already exists');
       }
 
       // Add transfer instruction
-      console.log('💸 Adding transfer instruction...');
       transaction.add(
         createTransferCheckedInstruction(
           treasuryATA,
@@ -289,38 +278,29 @@ async function handleProcessWinner(request) {
         )
       );
 
-      // Sign and send transaction
-      console.log('✍️ Signing transaction...');
+      // Sign and send
       transaction.sign(treasuryKeypair);
-      
-      console.log('📤 Sending transaction...');
       const signature = await connection.sendRawTransaction(
         transaction.serialize(),
-        {
-          skipPreflight: false,
-          preflightCommitment: 'confirmed'
-        }
+        { skipPreflight: false, preflightCommitment: 'confirmed' }
       );
 
-      console.log('📨 Transaction sent! Signature:', signature);
-      console.log('⏳ Confirming transaction...');
+      console.log('📨 Transaction sent:', signature);
 
       // Confirm transaction
       const confirmation = await connection.confirmTransaction({
         signature,
         blockhash,
-        lastValidBlockHeight: (await connection.getLatestBlockhash()).lastValidBlockHeight
+        lastValidBlockHeight
       }, 'confirmed');
 
       if (confirmation.value.err) {
-        console.error('❌ Transaction failed on-chain:', confirmation.value.err);
         throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`);
       }
 
       console.log('✅ Transaction confirmed!');
 
-      // Record the payout
-      console.log('💾 Recording payout in database...');
+      // Record payout
       await payoutsCollection.insertOne({
         periodId: expiredPeriod._id,
         frogId: winner._id,
@@ -334,13 +314,7 @@ async function handleProcessWinner(request) {
       // Mark period as processed
       await fotdCollection.updateOne(
         { _id: expiredPeriod._id },
-        {
-          $set: {
-            winnerProcessed: true,
-            winnerId: winner._id,
-            payoutSignature: signature
-          }
-        }
+        { $set: { winnerProcessed: true, winnerId: winner._id, payoutSignature: signature } }
       );
 
       // Create next period
@@ -355,14 +329,8 @@ async function handleProcessWinner(request) {
       });
 
       console.log('✅✅✅ FOTD PAYOUT COMPLETE! ✅✅✅');
-      console.log('   Winner:', winner.walletAddress);
-      console.log('   Rarity:', winner.rarity.score);
-      console.log('   Amount:', payoutUI, '$RIBBIT');
-      console.log('   TX:', signature);
       console.log('   View: https://solscan.io/tx/' + signature);
-      console.log('🔄 Next period created');
-      console.log('   Starts:', nextStartTime.toISOString());
-      console.log('   Ends:', nextEndTime.toISOString());
+      console.log('🔄 Next period: ends', nextEndTime.toISOString());
 
       return NextResponse.json({
         success: true,
@@ -376,22 +344,12 @@ async function handleProcessWinner(request) {
       });
 
     } catch (payoutError) {
-      console.error('❌❌❌ PAYOUT ERROR ❌❌❌');
-      console.error('Error type:', payoutError.constructor.name);
-      console.error('Error message:', payoutError.message);
-      console.error('Full error:', payoutError);
+      console.error('❌ PAYOUT ERROR:', payoutError.message);
       
       // Mark as processed with error
       await fotdCollection.updateOne(
         { _id: expiredPeriod._id },
-        {
-          $set: {
-            winnerProcessed: true,
-            payoutFailed: true,
-            error: payoutError.message,
-            errorDetails: payoutError.toString()
-          }
-        }
+        { $set: { winnerProcessed: true, payoutFailed: true, error: payoutError.message } }
       );
 
       // Create next period even after error
@@ -405,19 +363,16 @@ async function handleProcessWinner(request) {
         createdAt: now
       });
 
-      console.log('🔄 Next period created (after error)');
-
-      // Return error details
       return NextResponse.json({
         success: false,
         error: 'Payout failed',
         details: payoutError.message,
-        errorType: payoutError.constructor.name
+        nextPeriodEnds: nextEndTime.toISOString()
       }, { status: 500 });
     }
 
   } catch (error) {
-    console.error('❌ OUTER ERROR in FOTD winner processing:', error);
+    console.error('❌ OUTER ERROR:', error);
     return NextResponse.json(
       { error: 'Failed to process FOTD winner', details: error.message },
       { status: 500 }
