@@ -710,7 +710,7 @@ export default function Home() {
                         {/* Balance Display (Only if connected) */}
                         {connected && (
                             <div className="w-full bg-gray-800 p-3 md:p-6 rounded-lg border-2 border-gray-700" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}>
-                                <p className="text-green-300 text-center mb-2 md:mb-4 text-[8px] md:text-s" style={{ fontFamily: "'Press Start 2P', cursive" }}>Your $RIBBIT Balance:</p>
+                                <p className="text-green-300 text-center mb-2 md:mb-4 text-[8px] md:text-base" style={{ fontFamily: "'Press Start 2P', cursive" }}>Your $RIBBIT Balance:</p>
                                 <div className="bg-black p-2 md:p-4 rounded-md border border-gray-900">
                                     <p className="text-sm md:text-xl text-yellow-400 font-bold text-center break-all" style={{ fontFamily: "'Press Start 2P', cursive" }}>
                                         {isBalanceLoading ? '...' : parseFloat(ribbitBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
