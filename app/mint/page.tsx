@@ -652,26 +652,26 @@ export default function Home() {
                 </div>
             ) : (
                 <>
-                    {/* NAVIGATION */}
-                    <div className="absolute top-6 left-6 z-20 flex gap-6">
-                        <button onClick={() => router.push('/')} className="nav-link">
+                    {/* NAVIGATION - Mobile Responsive */}
+                    <div className="absolute top-4 left-4 z-20 flex flex-col md:flex-row gap-2 md:gap-6">
+                        <button onClick={() => router.push('/')} className="nav-link text-[8px] md:text-xs">
                             HOME
                         </button>
-                        <button onClick={() => router.push('/mint')} className="nav-link">
+                        <button onClick={() => router.push('/mint')} className="nav-link text-[8px] md:text-xs">
                             FROG FOREST
                         </button>
-                        <button onClick={() => router.push('/fotd')} className="nav-link">
+                        <button onClick={() => router.push('/fotd')} className="nav-link text-[8px] md:text-xs">
                             F.O.T.D
                         </button>
-                        <button onClick={() => router.push('/hall-of-fame')} className="nav-link">
+                        <button onClick={() => router.push('/hall-of-fame')} className="nav-link text-[8px] md:text-xs">
                             HALL OF FAME
                         </button>
                     </div>
 
-
-                    {/* TOP RIGHT - WALLET BUTTON (ABSOLUTE POSITIONING) */}
-                    <div className="absolute top-6 right-6 z-10">
+                    {/* TOP RIGHT - WALLET BUTTON - Mobile Responsive */}
+                    <div className="absolute top-4 right-4 z-20">
                         <div
+                            className="wallet-button-wrapper"
                             onMouseEnter={(e) => {
                                 const button = e.currentTarget.firstElementChild as HTMLElement;
                                 if (button) {
@@ -694,6 +694,7 @@ export default function Home() {
                                     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
                                     transition: 'all 0.3s ease',
                                 }}
+                                className="!text-[9px] !py-1.5 !px-2.5 md:!text-base md:!py-2 md:!px-4"
                             >
                                 {connected ? 'Connected' : 'Connect Wallet'}
                             </WalletMultiButton>
@@ -702,7 +703,7 @@ export default function Home() {
 
 
                     {/* CENTERED CONTENT - MINTING INTERFACE WRAPPED IN GRAY BOX */}
-                    <div className="max-w-xl w-full flex flex-col items-center gap-8 bg-gray-800 p-8 rounded-xl border-2 border-gray-800">
+                    <div className="max-w-xl w-full flex flex-col items-center gap-8 bg-gray-800 p-8 rounded-xl border-2 border-gray-800 mt-16 md:mt-0">
                         <h2 className="text-3xl md:text-5xl leading-loose pixel-3d text-center">
                             FROG FOREST
                         </h2>
@@ -782,4 +783,3 @@ export default function Home() {
         </main>
     );
 }
-

@@ -187,9 +187,9 @@ export default function FOTDPage() {
                 </button>
             </div>
 
-            {/* Timer Display - Top Right on Desktop, Above Content on Mobile */}
+            {/* Timer Display - Top Right on Desktop ONLY */}
             {hasFrog && !isProcessing && (
-                <div className="md:absolute md:top-6 md:right-6 z-20 w-full max-w-md md:w-64 bg-gray-800 p-3 rounded-xl border-4 border-gray-700 transition-all duration-500 mb-4 md:mb-0">
+                <div className="hidden md:block absolute top-6 right-6 z-20 w-64 bg-gray-800 p-3 rounded-xl border-4 border-gray-700 transition-all duration-500">
                     <p
                         className="text-green-300 text-center mb-2 text-[8px]"
                         style={{ fontFamily: "'Press Start 2P', cursive" }}
@@ -231,6 +231,44 @@ export default function FOTDPage() {
                 <h1 className="text-3xl sm:text-4xl md:text-6xl mt-10 text-center pixel-3d px-4" style={{ fontFamily: "'Press Start 2P', cursive" }}>
                     FROG OF THE DAY
                 </h1>
+
+                {/* Timer Display - Below Title on Mobile, Hidden on Desktop when frog exists */}
+                {hasFrog && !isProcessing && (
+                    <div className="md:hidden w-full max-w-md bg-gray-800 p-3 rounded-xl border-4 border-gray-700 transition-all duration-500 mb-4">
+                        <p
+                            className="text-green-300 text-center mb-2 text-[8px]"
+                            style={{ fontFamily: "'Press Start 2P', cursive" }}
+                        >
+                            TIME REMAINING
+                        </p>
+                        <div className="bg-black p-2 rounded-lg border-2 border-gray-900">
+                            <p
+                                className="text-xl text-yellow-400 font-bold text-center"
+                                style={{ fontFamily: "'Press Start 2P', cursive" }}
+                            >
+                                {isLoading ? '...' : timeLeft}
+                            </p>
+                        </div>
+                        {/* Prize Info */}
+                        <div
+                            className="mt-2 bg-black p-2 rounded-lg border-2 border-gray-900"
+                            style={{ boxShadow: '0 0 30px rgba(255, 215, 0, 0.4)' }}
+                        >
+                            <p
+                                className="text-[8px] text-yellow-400 font-bold text-center"
+                                style={{ fontFamily: "'Press Start 2P', cursive" }}
+                            >
+                                $Ribbit Prize Pool:
+                            </p>
+                            <p
+                                className="text-[10px] text-green-400 font-bold text-center mt-1"
+                                style={{ fontFamily: "'Press Start 2P', cursive" }}
+                            >
+                                {isPrizeLoading ? '...' : `${parseFloat(prizePool).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} `}
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Processing State */}
                 {isProcessing && (

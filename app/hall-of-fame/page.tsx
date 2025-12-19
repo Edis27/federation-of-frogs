@@ -76,8 +76,8 @@ export default function HallOfFame() {
                 backgroundRepeat: 'no-repeat'
             }}
         >
-            {/* NAVIGATION - Mobile Responsive */}
-            <div className="absolute top-4 left-4 z-20 flex flex-col md:flex-row gap-2 md:gap-6">
+            {/* NAVIGATION - Mobile Responsive - Moved lower to not overlap title */}
+            <div className="absolute top-20 md:top-4 left-4 z-20 flex flex-col md:flex-row gap-2 md:gap-6">
                 <button onClick={() => router.push('/')} className="nav-link text-[8px] md:text-xs">
                     HOME
                 </button>
