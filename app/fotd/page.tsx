@@ -172,17 +172,33 @@ export default function FOTDPage() {
             <div className="absolute inset-0 bg-black/40" />
 
             {/* NAVIGATION - Mobile Responsive */}
-            <div className="absolute top-4 left-0 right-0 md:left-4 md:right-auto z-20 flex flex-row justify-center md:justify-start gap-2.5 md:gap-6 px-2">
-                <button onClick={() => router.push('/')} className="nav-link text-[4.5px] md:text-xs whitespace-nowrap px-1">
+            <div className="absolute top-4 left-0 right-0 md:left-4 md:right-auto z-20 flex flex-row justify-center md:justify-start gap-2 md:gap-6 px-2">
+                <button 
+                    onClick={() => router.push('/')} 
+                    className="nav-link md:text-xs whitespace-nowrap"
+                    style={{ fontSize: 'clamp(6px, 2vw, 12px)' }}
+                >
                     HOME
                 </button>
-                <button onClick={() => router.push('/mint')} className="nav-link text-[4.5px] md:text-xs whitespace-nowrap px-1">
+                <button 
+                    onClick={() => router.push('/mint')} 
+                    className="nav-link md:text-xs whitespace-nowrap"
+                    style={{ fontSize: 'clamp(6px, 2vw, 12px)' }}
+                >
                     FROG FOREST
                 </button>
-                <button onClick={() => router.push('/fotd')} className="nav-link text-[4.5px] md:text-xs whitespace-nowrap px-1">
+                <button 
+                    onClick={() => router.push('/fotd')} 
+                    className="nav-link md:text-xs whitespace-nowrap"
+                    style={{ fontSize: 'clamp(6px, 2vw, 12px)' }}
+                >
                     F.O.T.D
                 </button>
-                <button onClick={() => router.push('/hall-of-fame')} className="nav-link text-[4.5px] md:text-xs whitespace-nowrap px-1">
+                <button 
+                    onClick={() => router.push('/hall-of-fame')} 
+                    className="nav-link md:text-xs whitespace-nowrap"
+                    style={{ fontSize: 'clamp(6px, 2vw, 12px)' }}
+                >
                     HALL OF FAME
                 </button>
             </div>
