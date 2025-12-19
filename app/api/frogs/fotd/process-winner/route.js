@@ -69,7 +69,37 @@ async function handleProcessWinner(request) {
     });
 
     if (!expiredPeriod) {
-      console.log('⏰ No expired periods - timer still running');
+      console.log('⏰ No expired periods found');
+      
+      // Check if ANY period exists at all
+      const anyPeriod = await fotdCollection.findOne({});
+      
+      if (!anyPeriod) {
+        console.log('🚀 FIRST RUN - Creating initial period');
+        
+        const startTime = now;
+        const endTime = new Date(startTime.getTime() + PERIOD_DURATION);
+
+        await fotdCollection.insertOne({
+          startTime,
+          endTime,
+          winnerProcessed: false,
+          createdAt: now,
+          initialPeriod: true
+        });
+
+        console.log('✅ Initial period created by cron');
+        console.log('   Starts:', startTime.toISOString());
+        console.log('   Ends:', endTime.toISOString());
+        
+        return NextResponse.json({
+          success: true,
+          message: 'Initial period created',
+          periodEndsAt: endTime.toISOString()
+        });
+      }
+      
+      console.log('⏰ Timer still running');
       return NextResponse.json({
         success: true,
         message: 'No expired periods to process'
