@@ -20,7 +20,7 @@ const TREASURY_WALLET = new PublicKey("6hNozPrcywMv5Lyx6VuqaSooWCsNsvQyoXie9W4u8
 const RIBBIT_TOKEN_DECIMALS = 6;
 
 // ✅ 1 MINUTE FOR TESTING
-const PERIOD_DURATION = 60000; // 1 minute
+const PERIOD_DURATION = 3600000; // 1 minute
 
 export async function GET(request) {
   console.log('🤖 CRON JOB TRIGGERED (GET):', new Date().toISOString());
