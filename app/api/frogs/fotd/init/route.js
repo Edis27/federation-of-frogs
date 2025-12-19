@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 
-export async function POST(request) {
+async function handleInit(request) {
   try {
-    // Protect with secret key
     const { searchParams } = new URL(request.url);
     const secret = searchParams.get('secret');
     
@@ -16,7 +15,7 @@ export async function POST(request) {
     const fotdCollection = db.collection('fotd_periods');
 
     const now = new Date();
-    const endTime = new Date(now.getTime() + 60000); // 1 minute from now
+    const endTime = new Date(now.getTime() + 60000);
 
     await fotdCollection.insertOne({
       startTime: now,
@@ -34,6 +33,14 @@ export async function POST(request) {
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+}
+
+export async function GET(request) {
+  return handleInit(request);
+}
+
+export async function POST(request) {
+  return handleInit(request);
 }
 
 export const dynamic = 'force-dynamic';
