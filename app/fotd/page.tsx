@@ -28,10 +28,9 @@ interface FOTDData {
     timeRemaining: number;
 }
 
-// Treasury wallet and token config (same as mint page)
 const RIBBIT_MINT_ADDRESS = new PublicKey("8aW5vwBWQP3vTqqHGSGs6MSqnRkSvHnti96b55ygpump");
 const TREASURY_WALLET = new PublicKey("6hNozPrcywMv5Lyx6VuqaSooWCsNsvQyoXie9W4u8RTK");
-const PRIZE_PERCENTAGE = 0.25; // 0.25% of treasury balance
+const PRIZE_PERCENTAGE = 0.25;
 
 export default function FOTDPage() {
     const router = useRouter();
@@ -40,17 +39,13 @@ export default function FOTDPage() {
     const [fotdData, setFotdData] = useState<FOTDData | null>(null);
     const [timeLeft, setTimeLeft] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
-    const [isProcessing, setIsProcessing] = useState(false); // New state for gap period
-
-    // Prize pool state
+    const [isProcessing, setIsProcessing] = useState(false);
     const [prizePool, setPrizePool] = useState<string>('0');
     const [isPrizeLoading, setIsPrizeLoading] = useState(true);
 
-    // Fetch treasury balance for prize pool
     const fetchPrizePool = async () => {
         setIsPrizeLoading(true);
         try {
-            // Try Token-2022 first (same strategy as mint page)
             const ata2022 = getAssociatedTokenAddressSync(
                 RIBBIT_MINT_ADDRESS,
                 TREASURY_WALLET,
@@ -61,17 +56,13 @@ export default function FOTDPage() {
             try {
                 const info2022 = await connection.getTokenAccountBalance(ata2022);
                 if (info2022?.value?.uiAmount != null) {
-                    console.log("✅ Treasury Token-2022 account detected");
                     const prizeAmount = info2022.value.uiAmount * PRIZE_PERCENTAGE;
                     setPrizePool(prizeAmount.toFixed(2));
                     setIsPrizeLoading(false);
                     return;
                 }
-            } catch (e) {
-                console.log("Treasury Token-2022 not found, trying standard...");
-            }
+            } catch (e) { }
 
-            // Fallback: Try Standard Token Program
             const ataSpl = getAssociatedTokenAddressSync(
                 RIBBIT_MINT_ADDRESS,
                 TREASURY_WALLET,
@@ -82,19 +73,14 @@ export default function FOTDPage() {
             try {
                 const infoSpl = await connection.getTokenAccountBalance(ataSpl);
                 if (infoSpl?.value?.uiAmount != null) {
-                    console.log("✅ Treasury standard token account detected");
                     const prizeAmount = infoSpl.value.uiAmount * PRIZE_PERCENTAGE;
                     setPrizePool(prizeAmount.toFixed(2));
                     setIsPrizeLoading(false);
                     return;
                 }
-            } catch (e) {
-                console.log("Treasury standard token not found either");
-            }
+            } catch (e) { }
 
             setPrizePool('0');
-            console.warn("⚠️ No treasury token account found");
-
         } catch (error) {
             console.error("❌ Error fetching prize pool:", error);
             setPrizePool('0');
@@ -103,7 +89,6 @@ export default function FOTDPage() {
         }
     };
 
-    // Fetch current FOTD data
     const fetchFOTDData = async () => {
         try {
             const response = await fetch('/api/frogs/fotd');
@@ -111,7 +96,6 @@ export default function FOTDPage() {
 
             if (data.success) {
                 setFotdData(data);
-                // If no period exists, we're in processing mode
                 if (!data.periodEndsAt) {
                     setIsProcessing(true);
                 } else {
@@ -125,7 +109,6 @@ export default function FOTDPage() {
         }
     };
 
-    // Format time remaining
     const formatTimeRemaining = (milliseconds: number): string => {
         if (milliseconds <= 0) return '00:00:00';
 
@@ -137,7 +120,6 @@ export default function FOTDPage() {
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
-    // Update countdown timer
     useEffect(() => {
         if (!fotdData || !fotdData.periodEndsAt) return;
 
@@ -149,12 +131,10 @@ export default function FOTDPage() {
             if (remaining <= 0) {
                 setTimeLeft('00:00:00');
                 setIsProcessing(true);
-                // Poll more aggressively when processing
                 const aggressivePoll = setInterval(() => {
                     fetchFOTDData();
-                }, 5000); // Every 5 seconds
+                }, 5000);
                 
-                // Clear after 2 minutes
                 setTimeout(() => clearInterval(aggressivePoll), 120000);
             } else {
                 setTimeLeft(formatTimeRemaining(remaining));
@@ -164,12 +144,10 @@ export default function FOTDPage() {
         return () => clearInterval(interval);
     }, [fotdData]);
 
-    // Initial data fetch
     useEffect(() => {
         fetchFOTDData();
         fetchPrizePool();
 
-        // Poll for updates every 10 seconds
         const pollInterval = setInterval(() => {
             fetchFOTDData();
             fetchPrizePool();
@@ -191,28 +169,27 @@ export default function FOTDPage() {
                 backgroundRepeat: 'no-repeat'
             }}
         >
-            {/* Dark overlay */}
             <div className="absolute inset-0 bg-black/40" />
 
-            {/* NAVIGATION */}
-            <div className="absolute top-6 left-6 z-20 flex gap-6">
-                <button onClick={() => router.push('/')} className="nav-link">
+            {/* NAVIGATION - Mobile Responsive */}
+            <div className="absolute top-4 left-4 z-20 flex flex-col md:flex-row gap-2 md:gap-6">
+                <button onClick={() => router.push('/')} className="nav-link text-[8px] md:text-xs">
                     HOME
                 </button>
-                <button onClick={() => router.push('/mint')} className="nav-link">
+                <button onClick={() => router.push('/mint')} className="nav-link text-[8px] md:text-xs">
                     FROG FOREST
                 </button>
-                <button onClick={() => router.push('/fotd')} className="nav-link">
+                <button onClick={() => router.push('/fotd')} className="nav-link text-[8px] md:text-xs">
                     F.O.T.D
                 </button>
-                <button onClick={() => router.push('/hall-of-fame')} className="nav-link">
+                <button onClick={() => router.push('/hall-of-fame')} className="nav-link text-[8px] md:text-xs">
                     HALL OF FAME
                 </button>
             </div>
 
-            {/* Timer Display - Conditionally positioned (only when frog exists AND not processing) */}
+            {/* Timer Display - Top Right on Desktop, Above Content on Mobile */}
             {hasFrog && !isProcessing && (
-                <div className="absolute top-6 right-6 z-20 w-64 bg-gray-800 p-3 rounded-xl border-4 border-gray-700 transition-all duration-500">
+                <div className="md:absolute md:top-6 md:right-6 z-20 w-full max-w-md md:w-64 bg-gray-800 p-3 rounded-xl border-4 border-gray-700 transition-all duration-500 mb-4 md:mb-0">
                     <p
                         className="text-green-300 text-center mb-2 text-[8px]"
                         style={{ fontFamily: "'Press Start 2P', cursive" }}
@@ -249,13 +226,13 @@ export default function FOTDPage() {
             )}
 
             {/* Content */}
-            <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-4">
+            <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-4 mt-20 md:mt-0">
                 {/* Title */}
-                <h1 className="text-4xl md:text-6xl mt-10 text-center pixel-3d" style={{ fontFamily: "'Press Start 2P', cursive" }}>
+                <h1 className="text-3xl sm:text-4xl md:text-6xl mt-10 text-center pixel-3d px-4" style={{ fontFamily: "'Press Start 2P', cursive" }}>
                     FROG OF THE DAY
                 </h1>
 
-                {/* Processing State - Show when timer hits zero */}
+                {/* Processing State */}
                 {isProcessing && (
                     <div className="w-full max-w-md bg-gray-800 p-6 rounded-xl border-4 border-yellow-500 animate-pulse">
                         <p className="text-yellow-300 text-center mb-3 text-sm" style={{ fontFamily: "'Press Start 2P', cursive" }}>

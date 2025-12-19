@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 export default function LandingPage() {
     const router = useRouter();
 
-    // Array of frog image paths - update these with your actual image filenames
     const frogImages = [
         '/frog1.png',
         '/frog2.png',
@@ -18,7 +17,6 @@ export default function LandingPage() {
         '/frog8.png',
     ];
 
-    // Duplicate the array for seamless loop
     const duplicatedImages = [...frogImages, ...frogImages];
 
     return (
@@ -31,34 +29,32 @@ export default function LandingPage() {
                 backgroundAttachment: 'fixed',
             }}
         >
-            {/* Dark overlay for better text readability */}
+            {/* Dark overlay */}
             <div className="absolute inset-0 bg-black/40" />
 
-
-            {/* NAVIGATION */}
-            <div className="absolute top-6 left-6 z-20 flex gap-6">
-                <button onClick={() => router.push('/')} className="nav-link">
+            {/* NAVIGATION - Mobile Responsive */}
+            <div className="absolute top-4 left-4 z-20 flex flex-col md:flex-row gap-2 md:gap-6">
+                <button onClick={() => router.push('/')} className="nav-link text-[8px] md:text-xs">
                     HOME
                 </button>
-                <button onClick={() => router.push('/mint')} className="nav-link">
+                <button onClick={() => router.push('/mint')} className="nav-link text-[8px] md:text-xs">
                     FROG FOREST
                 </button>
-                <button onClick={() => router.push('/fotd')} className="nav-link">
+                <button onClick={() => router.push('/fotd')} className="nav-link text-[8px] md:text-xs">
                     F.O.T.D
                 </button>
-                <button onClick={() => router.push('/hall-of-fame')} className="nav-link">
+                <button onClick={() => router.push('/hall-of-fame')} className="nav-link text-[8px] md:text-xs">
                     HALL OF FAME
                 </button>
             </div>
 
-
-            {/* Social Links - Top Right */}
-            <div className="absolute top-6 right-6 z-20 flex gap-4">
+            {/* Social Links - Top Right - Mobile Responsive */}
+            <div className="absolute top-4 right-4 z-20 flex gap-2 md:gap-4">
                 <a
                     href="https://x.com/FedOfFrogs"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-14 h-14 rounded-full overflow-hidden border-2 border-green-500 hover:border-green-400 transition-all hover:scale-110"
+                    className="w-10 h-10 md:w-14 md:h-14 rounded-full overflow-hidden border-2 border-green-500 hover:border-green-400 transition-all hover:scale-110"
                     style={{ boxShadow: '0 0 20px rgba(106, 188, 58, 0.5)' }}
                 >
                     <img
@@ -71,7 +67,7 @@ export default function LandingPage() {
                     href="https://pump.fun/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-14 h-14 rounded-full overflow-hidden border-2 border-green-500 hover:border-green-400 transition-all hover:scale-110"
+                    className="w-10 h-10 md:w-14 md:h-14 rounded-full overflow-hidden border-2 border-green-500 hover:border-green-400 transition-all hover:scale-110"
                     style={{ boxShadow: '0 0 20px rgba(106, 188, 58, 0.5)' }}
                 >
                     <img
@@ -82,26 +78,21 @@ export default function LandingPage() {
                 </a>
             </div>
 
-
-
-            {/* Content Container */}
-            <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-12">
-
-                {/* Title */}
+            {/* Content Container - Mobile Responsive */}
+            <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-8 md:gap-12 mt-20 md:mt-0">
+                {/* Title - Mobile Responsive */}
                 <h1
-                    className="text-4xl md:text-6xl lg:text-7xl text-center pixel-3d"
+                    className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl text-center pixel-3d px-4"
                     style={{ fontFamily: "'Press Start 2P', cursive" }}
                 >
                     FEDERATION OF FROGS
                 </h1>
 
-
-
-                {/* Scrolling Frog Gallery */}
-                <div className="w-full overflow-hidden py-8">
+                {/* Scrolling Frog Gallery - Mobile Responsive */}
+                <div className="w-full overflow-hidden py-4 md:py-8">
                     <div className="relative">
                         <div
-                            className="flex gap-6 animate-scroll"
+                            className="flex gap-3 md:gap-6 animate-scroll"
                             style={{
                                 width: 'fit-content',
                             }}
@@ -109,7 +100,7 @@ export default function LandingPage() {
                             {duplicatedImages.map((img, index) => (
                                 <div
                                     key={index}
-                                    className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 bg-gray-800 rounded-lg border-4 border-gray-800 overflow-hidden"
+                                    className="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-gray-800 rounded-lg border-4 border-gray-800 overflow-hidden"
                                     style={{ boxShadow: '0 0 20px rgba(106, 188, 58, 0.5)' }}
                                 >
                                     <img
@@ -124,24 +115,19 @@ export default function LandingPage() {
                     </div>
                 </div>
 
-                {/* Mint Button */}
+                {/* Mint Button - Mobile Responsive */}
                 <button
                     onClick={() => router.push('/mint')}
-                    className="pixel-button"
+                    className="pixel-button text-xs sm:text-sm md:text-base"
                     style={{
-                        fontSize: '18px',
-                        padding: '20px 60px',
-                        minWidth: '300px',
+                        padding: '15px 30px',
+                        minWidth: '200px',
+                        maxWidth: '90%',
                     }}
                 >
                     ENTER FROG FOREST
                 </button>
             </div>
-
-
-
-
-
         </main>
     );
 }
