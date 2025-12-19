@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 
-export async function POST() {
+export async function POST(request) {
   try {
+    // Protect with secret key
+    const { searchParams } = new URL(request.url);
+    const secret = searchParams.get('secret');
+    
+    if (secret !== process.env.INIT_SECRET) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const client = await clientPromise;
     const db = client.db('federation_of_frogs');
     const fotdCollection = db.collection('fotd_periods');
@@ -27,8 +35,5 @@ export async function POST() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-```
 
-Then when you launch, just visit:
-```
-https://federation-of-frogs.vercel.app/api/frogs/fotd/init
+export const dynamic = 'force-dynamic';
