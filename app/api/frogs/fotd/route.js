@@ -2,8 +2,8 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 
-// ✅ 1 MINUTE FOR TESTING - Change to 86400000 for 24 hours in production
-const PERIOD_DURATION = 60000; // 1 minute
+// This endpoint ONLY fetches the current period data
+// It does NOT create periods - that's the cron's job!
 
 export async function GET() {
   try {
@@ -15,78 +15,22 @@ export async function GET() {
     const now = new Date();
 
     // Get current active period
-    let currentPeriod = await fotdCollection.findOne({
+    const currentPeriod = await fotdCollection.findOne({
       endTime: { $gt: now }
     });
 
-    // ✅ ONLY auto-initialize if NO periods exist at all (first time ever)
+    // If no active period exists, that's fine - just return null
+    // The cron will create the next period when it runs
     if (!currentPeriod) {
-      console.log('🔍 No active period found, checking for recent expired periods...');
+      console.log('⏳ No active period - waiting for cron to create next period');
       
-      // Check if there's a recently expired period (within last 2 minutes)
-      // This means cron is about to create a new one, so we should wait
-      const recentExpiredPeriod = await fotdCollection.findOne({
-        endTime: { 
-          $lte: now,
-          $gt: new Date(now.getTime() - 120000) // Within last 2 minutes
-        }
+      return NextResponse.json({
+        success: true,
+        currentFrog: null,
+        periodEndsAt: null,
+        timeRemaining: 0,
+        message: 'No active period - next period will start soon'
       });
-
-      if (recentExpiredPeriod) {
-        console.log('⏳ Recent expired period found - waiting for cron to create next period');
-        console.log('   Expired at:', recentExpiredPeriod.endTime.toISOString());
-        
-        // Return info about the expired period for now
-        return NextResponse.json({
-          success: true,
-          currentFrog: null,
-          periodEndsAt: null,
-          timeRemaining: 0,
-          message: 'Waiting for next period to be created by cron',
-          lastPeriodEnded: recentExpiredPeriod.endTime.toISOString()
-        });
-      }
-
-      // Check if ANY periods exist at all
-      const anyPeriod = await fotdCollection.findOne({});
-      
-      if (anyPeriod) {
-        console.log('⚠️ Periods exist but none are active - this should not happen!');
-        // Don't create a new period - let cron handle it
-        return NextResponse.json({
-          success: false,
-          error: 'No active period and system needs initialization',
-          message: 'Please wait for cron to create next period'
-        }, { status: 503 });
-      }
-
-      // Only initialize if this is the VERY FIRST TIME (no periods exist at all)
-      console.log('🚀 First time initialization - no periods exist at all');
-      
-      const startTime = now;
-      const endTime = new Date(startTime.getTime() + PERIOD_DURATION);
-
-      const result = await fotdCollection.insertOne({
-        startTime,
-        endTime,
-        winnerProcessed: false,
-        createdAt: now,
-        firstTimeInit: true
-      });
-
-      console.log('✅ FIRST PERIOD EVER created');
-      console.log('   Period ID:', result.insertedId);
-      console.log('   Starts:', startTime.toISOString());
-      console.log('   Ends:', endTime.toISOString());
-      console.log('🤖 Cron will now manage all future periods');
-
-      currentPeriod = {
-        _id: result.insertedId,
-        startTime,
-        endTime,
-        winnerProcessed: false,
-        createdAt: now
-      };
     }
 
     // Get the rarest frog minted during this period
