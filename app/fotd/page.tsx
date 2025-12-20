@@ -28,7 +28,7 @@ interface FOTDData {
     timeRemaining: number;
 }
 
-const RIBBIT_MINT_ADDRESS = new PublicKey("8aW5vwBWQP3vTqqHGSGs6MSqnRkSvHnti96b55ygpump");
+const RIBBIT_MINT_ADDRESS = new PublicKey("9oNEYWScgABtHhTCEHJNnMbsVNMCdGew6bUhSiMZpump");
 const TREASURY_WALLET = new PublicKey("6hNozPrcywMv5Lyx6VuqaSooWCsNsvQyoXie9W4u8RTK");
 const PRIZE_PERCENTAGE = 0.25;
 

@@ -64,7 +64,7 @@ export default function LandingPage() {
                     />
                 </a>
                 <a
-                    href="https://pump.fun/"
+                    href="https://pump.fun/coin/9oNEYWScgABtHhTCEHJNnMbsVNMCdGew6bUhSiMZpump"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 md:w-14 md:h-14 rounded-full overflow-hidden border-2 border-green-500 hover:border-green-400 transition-all hover:scale-110"
