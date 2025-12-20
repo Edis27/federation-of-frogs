@@ -17,6 +17,7 @@ import bs58 from 'bs58';
 
 const RIBBIT_MINT_ADDRESS = new PublicKey("8aW5vwBWQP3vTqqHGSGs6MSqnRkSvHnti96b55ygpump");
 const TREASURY_WALLET = new PublicKey("6hNozPrcywMv5Lyx6VuqaSooWCsNsvQyoXie9W4u8RTK");
+const DEVELOPER_WALLET = new PublicKey("FL943nyZWFEC5A9Lr7ztYbBEmaQNgp7WnoRKBZp8kmtc"); // ✅ YOUR WALLET
 const RIBBIT_TOKEN_DECIMALS = 6;
 
 // ✅ 1 MINUTE FOR TESTING
@@ -203,11 +204,13 @@ async function handleProcessWinner(request) {
 
       console.log('💵 Treasury balance:', treasuryBalance.value.uiAmount, '$RIBBIT');
 
-      // Calculate 25% of treasury
+      // Calculate 25% of treasury (both payouts based on ORIGINAL balance)
       const payoutAmount = currentBalance / BigInt(4);
       const payoutUI = Number(payoutAmount) / Math.pow(10, RIBBIT_TOKEN_DECIMALS);
 
       console.log('💸 Payout: 25% =', payoutUI, '$RIBBIT');
+      console.log('   Winner gets:', payoutUI, '$RIBBIT');
+      console.log('   Developer gets:', payoutUI, '$RIBBIT');
 
       if (payoutAmount === BigInt(0)) {
         console.log('⚠️ Treasury balance too low');
@@ -244,6 +247,14 @@ async function handleProcessWinner(request) {
         TOKEN_2022_PROGRAM_ID
       );
 
+      // ✅ Developer ATA
+      const developerATA = getAssociatedTokenAddressSync(
+        RIBBIT_MINT_ADDRESS,
+        DEVELOPER_WALLET,
+        false,
+        TOKEN_2022_PROGRAM_ID
+      );
+
       const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
       const transaction = new Transaction({
         recentBlockhash: blockhash,
@@ -265,12 +276,41 @@ async function handleProcessWinner(request) {
         );
       }
 
-      // Add transfer instruction
+      // ✅ Check if developer's ATA exists
+      const developerAccountInfo = await connection.getAccountInfo(developerATA);
+      if (!developerAccountInfo) {
+        console.log('🆕 Creating developer ATA');
+        transaction.add(
+          createAssociatedTokenAccountInstruction(
+            TREASURY_WALLET,
+            developerATA,
+            DEVELOPER_WALLET,
+            RIBBIT_MINT_ADDRESS,
+            TOKEN_2022_PROGRAM_ID
+          )
+        );
+      }
+
+      // Add transfer instruction to winner
       transaction.add(
         createTransferCheckedInstruction(
           treasuryATA,
           RIBBIT_MINT_ADDRESS,
           winnerATA,
+          TREASURY_WALLET,
+          Number(payoutAmount),
+          RIBBIT_TOKEN_DECIMALS,
+          [],
+          TOKEN_2022_PROGRAM_ID
+        )
+      );
+
+      // ✅ Add transfer instruction to developer
+      transaction.add(
+        createTransferCheckedInstruction(
+          treasuryATA,
+          RIBBIT_MINT_ADDRESS,
+          developerATA,
           TREASURY_WALLET,
           Number(payoutAmount),
           RIBBIT_TOKEN_DECIMALS,
@@ -306,8 +346,10 @@ async function handleProcessWinner(request) {
         periodId: expiredPeriod._id,
         frogId: winner._id,
         winnerWallet: winner.walletAddress,
+        developerWallet: DEVELOPER_WALLET.toString(), // ✅ Record developer payout
         rarityScore: winner.rarity.score,
-        payoutAmount: payoutAmount.toString(),
+        winnerPayoutAmount: payoutAmount.toString(),
+        developerPayoutAmount: payoutAmount.toString(), // ✅ Same amount
         signature,
         paidAt: new Date()
       });
@@ -330,14 +372,18 @@ async function handleProcessWinner(request) {
       });
 
       console.log('✅✅✅ FOTD PAYOUT COMPLETE! ✅✅✅');
+      console.log('   Winner payout:', payoutUI, '$RIBBIT');
+      console.log('   Developer payout:', payoutUI, '$RIBBIT');
       console.log('   View: https://solscan.io/tx/' + signature);
       console.log('🔄 Next period: ends', nextEndTime.toISOString());
 
       return NextResponse.json({
         success: true,
         winner: winner.walletAddress,
+        developer: DEVELOPER_WALLET.toString(),
         rarityScore: winner.rarity.score,
-        payoutAmount: payoutAmount.toString(),
+        winnerPayoutAmount: payoutAmount.toString(),
+        developerPayoutAmount: payoutAmount.toString(),
         payoutUI: payoutUI,
         signature,
         solscanUrl: `https://solscan.io/tx/${signature}`,
