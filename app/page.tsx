@@ -128,6 +128,15 @@ export default function LandingPage() {
                     ENTER FROG FOREST
                 </button>
             </div>
+            {/* Copyright Statement - Bottom */}
+            <div className="absolute bottom-4 left-0 right-0 z-20 text-center">
+                <p
+                    className="text-[8px] sm:text-[10px] md:text-xs text-gray-300"
+                    style={{ fontFamily: "'Press Start 2P', cursive" }}
+                >
+                    © 2025 FEDERATION OF FROGS. ALL RIGHTS RESERVED.
+                </p>
+            </div>
         </main>
     );
 }
